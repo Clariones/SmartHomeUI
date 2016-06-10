@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="bgby.skynet.org.smarthomeui.temperaty.ArcBarUnitActivity"
+    android:background="#0a0505">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#0b0b0b"
+        android:id="@+id/progressBarArea">
+
+        <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:degree="240"
+            app:diameter="270dp"
+            app:minValue="16.0"
+            app:maxValue="35.0"
+            app:hasTickMark="true"
+            app:tickMarkLineLength="10dp"
+            app:tickMarkColor="@android:color/white"
+            app:tickMarkTextSize="12dp"
+            app:progressBarBackgroundColor="@android:color/black"
+            app:progressBarLowColor="@android:color/holo_blue_light"
+            app:progressBarMiddleColor="@android:color/holo_green_dark"
+            app:progressBarHighColor="@android:color/holo_red_dark"
+            android:layout_centerInParent="true"
+            android:id="@+id/progressBar">
+
+        </bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/progressBarArea">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/btn1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/btn2" />
+    </LinearLayout>
+
+
+</RelativeLayout>

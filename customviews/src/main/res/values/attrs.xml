@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="diameter" format="dimension"></attr>
+    <attr name="degree" format="integer"></attr>
+    <attr name="minValue" format="float"></attr>
+    <attr name="maxValue" format="float"></attr>
+    <attr name="cavityRatio" format="float"></attr>
+
+    <declare-styleable name="AveragedGridLayout">
+        <attr name="atRow" format="integer"></attr>
+        <attr name="atCol" format="integer"></attr>
+        <attr name="hasRows" format="integer"></attr>
+        <attr name="hasCols" format="integer"></attr>
+    </declare-styleable>
+
+    <declare-styleable name="ArcProgressBar">
+        <attr name="diameter"></attr>
+        <attr name="degree"></attr>
+        <attr name="hasTickMark" format = "boolean"></attr>
+        <attr name="tickMarkLineLength" format="dimension"></attr>
+        <attr name="tickMarkTextSize" format="dimension"></attr>
+        <attr name="tickMarkColor" format="color"></attr>
+        <attr name="progressBarBackgroundColor" format="color"></attr>
+        <attr name="progressBarLowColor" format="color"></attr>
+        <attr name="progressBarMiddleColor" format="color"></attr>
+        <attr name="progressBarHighColor" format="color"></attr>
+        <attr name="minValue"></attr>
+        <attr name="maxValue"></attr>
+        <attr name="cavityRatio"></attr>
+    </declare-styleable>
+
+    <declare-styleable name="RoundSeekBar">
+        <attr name="diameter"></attr>
+        <attr name="degree"></attr>
+        <attr name="startDegree" format="float"></attr>
+        <attr name="minValue"></attr>
+        <attr name="maxValue"></attr>
+        <attr name="valueLowLimit" format="float"></attr>
+        <attr name="valueHighLimit" format="float"></attr>
+        <attr name="wheel" format="reference"></attr>
+        <attr name="arrow" format="reference"></attr>
+    </declare-styleable>
+
+    <declare-styleable name="CircleCentreRelaytiveLayout">
+        <attr name="layout_inside" format="reference"></attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/appContentView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_dark"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="0dp"
+        tools:context=".StartPageActivity">
+
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/scroll"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/llFonts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:orientation="vertical"
+                android:scrollIndicators="top|end"
+                android:visibility="gone"></LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtStartingTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:autoText="false"
+                android:text=""
+                android:textColor="@color/abc_secondary_text_material_dark" />
+
+            <ProgressBar
+                android:id="@+id/progressBarStarting"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:background="@drawable/abc_btn_check_to_on_mtrl_015"
+                android:contextClickable="false"
+                android:max="100"
+                android:minHeight="24px"
+                android:mirrorForRtl="true"
+                android:progress="23" />
+
+            <TextView
+                android:id="@+id/txtStartingDecription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayout"
+                android:layout_centerHorizontal="true"
+                android:longClickable="true"
+                android:maxLines="2"
+                android:text="New Text"
+                android:textColor="@color/abc_secondary_text_material_dark" />
+
+            <Button
+                android:id="@+id/btnShowHideErrorReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/btn_error_report"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txtErrorReport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:maxLines="15"
+                android:scrollbars="vertical"
+                android:singleLine="false"
+                android:text=""
+                android:textColor="@color/abc_primary_text_material_dark"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnOpenSettings"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/preferences"
+            android:contentDescription="修改配置" />
+    </RelativeLayout>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="bgby.skynet.org.smarthomeui.temperaty.CentreLayoutUnitActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
+
+        <bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout
+            android:id="@+id/view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true">
+
+            <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
+                android:id="@+id/progressBar"
+                app:degree="240"
+                app:diameter="270dp"
+                app:hasTickMark="true"
+                app:maxValue="35.0"
+                app:minValue="16.0"
+                app:progressBarBackgroundColor="@android:color/black"
+                app:progressBarHighColor="@android:color/holo_red_dark"
+                app:progressBarLowColor="@android:color/holo_blue_light"
+                app:progressBarMiddleColor="@android:color/holo_green_dark"
+                app:tickMarkColor="@android:color/white"
+                app:tickMarkLineLength="10dp"
+                app:tickMarkTextSize="12dp"
+                app:cavityRatio="0.95"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_centerInParent="true">
+            </bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
+
+            <bgby.skynet.org.customviews.roundseekbar.RoundSeekBar
+                android:id="@+id/seekBar"
+                app:arrow="@drawable/roundsliderarrow"
+                app:degree="240"
+                app:diameter="500dp"
+                app:maxValue="35"
+                app:minValue="16"
+                app:startDegree="150"
+                app:valueHighLimit="35"
+                app:valueLowLimit="18"
+                app:wheel="@drawable/roundsliderbkg"
+                app:layout_inside="@id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:id="@+id/txtTemp"
+                android:background="#dbd5d5"
+                android:textSize="20dp" />
+        </bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout>
+
+
+    </RelativeLayout>
+</RelativeLayout>

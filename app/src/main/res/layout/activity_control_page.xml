@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/ctrlpage_whole_view"
+    tools:context="bgby.skynet.org.smarthomeui.ControlPageActivity">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|top"
+        android:layout_margin="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|top"
+            android:id="@+id/cmptpage_statusBar"
+            android:layout_alignParentTop="true"
+            android:clickable="true">
+
+           <ImageView
+                android:layout_width="@dimen/cmptpage_logoicon_width"
+                android:layout_height="@dimen/cmptpage_logoicon_height"
+                android:id="@+id/cmptpage_logoIcon"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cmptpage_pageName"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFFFFF"/>
+
+            <ImageButton
+                android:layout_width="@dimen/cmptpage_logoicon_height"
+                android:layout_height="@dimen/cmptpage_logoicon_height"
+                android:id="@+id/cmptpage_menuIcon"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/preferences" />
+
+        </RelativeLayout>
+
+        <android.support.v4.view.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/viewPager"
+            />
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

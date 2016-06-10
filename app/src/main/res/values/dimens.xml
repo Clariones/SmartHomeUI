@@ -1,0 +1,18 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="cmptpage_logoicon_width">100dp</dimen>
+    <dimen name="cmptpage_logoicon_height">24dp</dimen>
+    <dimen name="cmptpage_pagename_size">16dp</dimen>
+    <dimen name="cmptsummary_icon_width">96dp</dimen>
+    <dimen name="cmptsummary_icon_height">72dp</dimen>
+    <dimen name="cmptsummary_value_size">24dp</dimen>
+    <dimen name="cmptsummary_name_size">32dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_temperature_size">32dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_roomtemperature_textsize">24dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_settemperature_textsize">12dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_roomhumidity_textsize">24dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_topmargin">48dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_button_size">48dp</dimen>
+</resources>
