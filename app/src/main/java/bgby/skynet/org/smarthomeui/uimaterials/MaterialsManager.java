@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -11,6 +12,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,8 +31,30 @@ import java.util.zip.ZipInputStream;
  * Created by Clariones on 6/1/2016.
  */
 public class MaterialsManager {
-    protected static final String TAG = "MaterialsManager";
+    public static final String MATERIAL_ID_DEF0 = "app/default/system/0";
+    public static final String MATERIAL_ID_DEF1 = "app/default/system/1";
+    public static final String MATERIAL_ID_DEF2 = "app/default/system/2";
+    public static final String MATERIAL_ID_DEF3 = "app/default/system/3";
+    public static final String MATERIAL_ID_DEF4 = "app/default/system/4";
+    public static final String MATERIAL_ID_DEF5 = "app/default/system/5";
+    public static final String MATERIAL_ID_DEF6 = "app/default/system/6";
+    public static final String MATERIAL_ID_DEF7 = "app/default/system/7";
+    public static final String MATERIAL_ID_DEF8 = "app/default/system/8";
+    public static final String MATERIAL_ID_DEF9 = "app/default/system/9";
+    public static final String MATERIAL_ID_DEF_OTHER = "app/default/system/other";
+    public static final String MATERIAL_ID_LIGHT_ON = "app/default/system/lighton";
+    public static final String MATERIAL_ID_LIGH_OFF = "app/default/system/lightoff";
+    public static final String MATERIAL_ID_SWITCH_ON = "app/default/system/switchon";
+    public static final String MATERIAL_ID_SWITCH_OFF = "app/default/system/switchoff";
+    public static final String MATERIAL_ID_CURTAIN_OPEN = "app/default/system/curtainopen";
+    public static final String MATERIAL_ID_CURTAIN_CLOSE = "app/default/system/curtainclose";
+    public static final String MATERIAL_ID_TEMPERATURE = "app/default/system/temperature";
+    public static final String MATERIAL_ID_HUMIDITY = "app/default/system/humidity";
+    public static final String MATERIAL_ID_PM2_5 = "app/default/system/pm2.5";
+    public static final String MATERIAL_ID_LOGO = "app/default/system/logo";
     public static final String CONFIG_PROPERTIES = "config.properties";
+
+    protected static final String TAG = "MaterialsManager";
     protected Map<String, Pattern> wildcharKeys;
     protected Context context;
     protected Map<String, IMaterial> defaultMaterials;
@@ -37,6 +63,9 @@ public class MaterialsManager {
     protected Properties customMaterialConfig;
 
     public IMaterial getMaterial(String key) {
+        if (key  == null || key.isEmpty()){
+            return null;
+        }
         IMaterial material = getMaterialFromPackage(key, customMaterialConfig, customMaterials);
         if (material != null) {
             return material;
@@ -71,6 +100,8 @@ public class MaterialsManager {
     }
 
     public void loadZipPackage(File propertyFile, File resFile) throws IOException {
+        File extFolder = Environment.getExternalStorageDirectory();
+        Log.i(TAG, "Extern Folder base on " + extFolder);
         wildcharKeys = new HashMap<>();
         loadDefaultMaterials();
         loadCustomMaterials(propertyFile, resFile);
@@ -78,7 +109,7 @@ public class MaterialsManager {
 
     protected void loadCustomMaterials(File propertyFile, File file) throws IOException {
         if (!propertyFile.exists()) {
-            Log.i(TAG, "Custom material property " + file.getAbsolutePath() + " not found. Use default materials only");
+            Log.i(TAG, "Custom material property " + propertyFile.getAbsolutePath() + " not found. Use default materials only");
             return;
         }
         if (!file.exists()) {
@@ -103,8 +134,9 @@ public class MaterialsManager {
         InputStream ins = null;
         try {
             ins = new FileInputStream(propertyFile);
+            Reader reader = new InputStreamReader(ins, Charset.forName("UTF-8"));
             Properties props = new Properties();
-            props.load(ins);
+            props.load(reader);
             return props;
         } finally {
             if (ins != null) {
@@ -128,8 +160,9 @@ public class MaterialsManager {
         InputStream ins = null;
         try {
             ins = context.getAssets().open("baseuidata.properties");
+            Reader reader = new InputStreamReader(ins, Charset.forName("UTF-8"));
             Properties props = new Properties();
-            props.load(ins);
+            props.load(reader);
             return props;
         } finally {
             if (ins != null) {
@@ -155,12 +188,12 @@ public class MaterialsManager {
         for (Object value : values) {
             String valueStr = ((String) value).trim();
             int pos = valueStr.indexOf(':');
-            if (pos < 0){
+            if (pos < 0) {
                 continue;
             }
             String type = valueStr.substring(0, pos).trim();
-            if (type.equalsIgnoreCase("file")){
-                usedFiles.add(valueStr.substring(pos+1).trim());
+            if (type.equalsIgnoreCase("file")) {
+                usedFiles.add(valueStr.substring(pos + 1).trim());
             }
         }
         ZipInputStream zinIns = new ZipInputStream(inputStream);
@@ -173,12 +206,12 @@ public class MaterialsManager {
                 continue;
             }
             String fileName = entry.getName();
-            if (!usedFiles.contains(fileName)){
+            if (!usedFiles.contains(fileName)) {
                 continue;
             }
             Log.d(TAG, "Load bitmap " + entry.getName());
             Bitmap bm = BitmapFactory.decodeStream(zinIns);
-            materialsLib.put("file:"+fileName, new DrawableMaterail(getContext(), bm));
+            materialsLib.put("file:" + fileName, new DrawableMaterail(getContext(), bm));
         }
         zinIns.close();
     }
@@ -190,25 +223,25 @@ public class MaterialsManager {
             String materialResource = (String) ent.getValue();
             String strOrgValue = materialResource.trim();
             int pos = strOrgValue.indexOf(':');
-            if (pos < 0){
+            if (pos < 0) {
                 ent.setValue(null);
                 continue;
             }
             String materialType = strOrgValue.substring(0, pos).toLowerCase().trim();
-            String materialValue = strOrgValue.substring(pos+1).trim();
-            String cleanMaterialResourceName = materialType+":"+materialValue;
+            String materialValue = strOrgValue.substring(pos + 1).trim();
+            String cleanMaterialResourceName = materialType + ":" + materialValue;
             ent.setValue(cleanMaterialResourceName);
-            if (materialType.equals("file")){
+            if (materialType.equals("file")) {
                 continue; // files are already loaded
             }
             if (materialsLib.containsKey(cleanMaterialResourceName)) {
                 continue;
             }
             if (materialType.equals("color")) {
-                materialsLib.put(cleanMaterialResourceName,  createColorMaterial(materialValue));
-            }else if (materialType.equalsIgnoreCase("font")) {
-                materialsLib.put(cleanMaterialResourceName,  createFontMaterial(materialValue));
-            }else{
+                materialsLib.put(cleanMaterialResourceName, createColorMaterial(materialValue));
+            } else if (materialType.equalsIgnoreCase("font")) {
+                materialsLib.put(cleanMaterialResourceName, createFontMaterial(materialValue));
+            } else {
                 Log.w(TAG, "Material [" + materialResource + "] not processed");
             }
         }
@@ -220,7 +253,6 @@ public class MaterialsManager {
             wildcharKeys.put(meterialID, Pattern.compile(ptnKey));
         }
     }
-
 
 
     private FontMaterial createFontMaterial(String materialData) {
@@ -273,11 +305,11 @@ public class MaterialsManager {
         }
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
-
     public Context getContext() {
         return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 }

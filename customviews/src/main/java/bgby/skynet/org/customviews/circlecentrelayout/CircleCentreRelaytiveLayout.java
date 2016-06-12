@@ -13,14 +13,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Clariones on 6/6/2016.
  */
 public class CircleCentreRelaytiveLayout extends ViewGroup {
-    private Logger logger = Logger.getLogger(CircleCentreRelaytiveLayout.class.getName());
     private static final String TAG = "CircleCentreLayout";
     private HashMap<Integer, MeasureData> childrenData;
     private int mTop;
@@ -52,9 +49,6 @@ public class CircleCentreRelaytiveLayout extends ViewGroup {
                     data.getTop(), data.getLeft(), data.getRight(), data.getBottom(),
                     data.getLeft()-mLeft, data.getTop()-mTop,data.getRight()-mLeft, data.getBottom()-mTop));
             childView.layout(data.getLeft()-mLeft, data.getTop()-mTop,data.getRight()-mLeft, data.getBottom()-mTop);
-            logger.log(Level.INFO, "Layout {0} ({1},{2})->({3},{4}) to ({5},{6})->({7},{8})",
-                    new Object[]{data.getTop(), data.getLeft(), data.getRight(), data.getBottom(),
-                            data.getLeft()-mLeft, data.getTop()-mTop,data.getRight()-mLeft, data.getBottom()-mTop});
         }
     }
 

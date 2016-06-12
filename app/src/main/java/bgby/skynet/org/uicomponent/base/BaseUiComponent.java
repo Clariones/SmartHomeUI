@@ -14,7 +14,9 @@ import bgby.skynet.org.smarthomeui.utils.Controllers;
  * Created by Clariones on 6/3/2016.
  */
 public class BaseUiComponent extends Fragment implements  IUiComponent{
-    protected static final String ARG_PAGE_POSITION = "arg_page_position";
+    public static final String ARG_COMPONENT_RUNTIME_ID = "arg_component_runtime_id";
+    public static final String ARG_DEVICE_ID = "arg_device_id";
+    public static final String ARG_PAGE_POSITION = "arg_page_position";
     private static final String TAG = "BaseUiComponent";
     protected ILayoutComponent layoutData;
 

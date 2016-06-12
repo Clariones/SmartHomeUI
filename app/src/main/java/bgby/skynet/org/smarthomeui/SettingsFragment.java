@@ -15,12 +15,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     protected static final String KEY_PROXY_ADDRESS = "pref_key_driverproxy_address";
     protected static final String KEY_PROXY_PORT = "pref_key_driverproxy_port";
     protected static final String KEY_MINE_ID = "pref_key_mine_id";
+    protected static final String KEY_MATERIAL_FOLDER = "pref_key_material_folder";
     protected static final String[] MINE_KEYS = {
             KEY_MULTICAST_ADDRESS,
             KEY_MULTICAST_PORT,
             KEY_PROXY_ADDRESS,
             KEY_PROXY_PORT,
             KEY_MINE_ID,
+            KEY_MATERIAL_FOLDER,
     };
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

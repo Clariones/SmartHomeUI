@@ -18,18 +18,26 @@ import bgby.skynet.org.uicomponent.base.ILayoutComponent;
  */
 public class Controllers {
     public static final String PREFERENCE_KEY_DIRECTION = "pref_key_screen_direction";
-    private Controllers(){}
     private static AtomicLong gComponentID = new AtomicLong(1);
     private static Map<String, ILayoutComponent> components = new HashMap<>();
+    private static Map<String, ILayoutComponent> componentsById = new HashMap<>();
     private static UIControllerManager controllerManager;
     private static MaterialsManager materialsManager;
-
-    protected static String getUniquedComponentID(String prefix){
-        return prefix + String.format("_%03d",gComponentID.incrementAndGet());
+    private Controllers() {
     }
-    public static ILayoutComponent getComponentByRuntimeID(String id){
+
+    protected static String getUniquedComponentID(String prefix) {
+        return prefix + String.format("_%03d", gComponentID.incrementAndGet());
+    }
+
+    public static ILayoutComponent getComponentByRuntimeID(String id) {
         return components.get(id);
     }
+
+    public static ILayoutComponent getComponentByDeviceID(String id) {
+        return componentsById.get(id);
+    }
+
     public static UIControllerManager getControllerManager() {
         return controllerManager;
     }
@@ -49,13 +57,16 @@ public class Controllers {
     public static String regsiterComponent(ILayoutComponent component) {
         String id = getUniquedComponentID(component.getType());
         components.put(id, component);
+        if (component.getDeviceID() != null) {
+            componentsById.put(component.getDeviceID(), component);
+        }
         return id;
     }
 
     public static void setScreenDirection(Activity page) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(page);
         int direction = prefs.getInt(PREFERENCE_KEY_DIRECTION, -1);
-        if (direction == -1){
+        if (direction == -1) {
             prefs.edit().putInt(PREFERENCE_KEY_DIRECTION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE).apply();
             page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             return;
@@ -63,8 +74,8 @@ public class Controllers {
 
 
         int curRequestDirection = page.getRequestedOrientation();
-        if (direction != curRequestDirection){
-            switch (direction){
+        if (direction != curRequestDirection) {
+            switch (direction) {
                 case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
                     page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     break;

@@ -76,4 +76,36 @@ public class FontMaterial extends BaseMaterial {
         }
         return null;
     }
+
+    public String getFontFamily() {
+        return fontFamily;
+    }
+
+    public void setFontFamily(String fontFamily) {
+        this.fontFamily = fontFamily;
+    }
+
+    public Integer getFontStyle() {
+        return fontStyle;
+    }
+
+    public void setFontStyle(Integer fontStyle) {
+        this.fontStyle = fontStyle;
+    }
+
+    public Integer getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(Integer fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    public Integer getFontColor() {
+        return fontColor;
+    }
+
+    public void setFontColor(Integer fontColor) {
+        this.fontColor = fontColor;
+    }
 }

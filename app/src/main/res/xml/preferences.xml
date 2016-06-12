@@ -22,4 +22,8 @@
         android:title="@string/pref_title_multicast_port"
         android:defaultValue="8982"
         android:inputType="number"/>
+    <EditTextPreference
+        android:key="pref_key_material_folder"
+        android:title="@string/pref_title_material_folder"
+        android:defaultValue="smarthome/materials"/>
 </PreferenceScreen>

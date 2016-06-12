@@ -15,7 +15,37 @@ import bgby.skynet.org.uicomponent.base.ILayoutComponent;
  */
 public abstract class BaseLayoutGroupComponent extends LayoutGroupBaseImpl implements ILayoutComponent {
     protected String displayName = "未命名";
-    private String componentID;
+    protected String componentID;
+    protected String deviceID;
+    protected DeviceProfile deviceProfile;
+
+    public String getComponentID() {
+        return componentID;
+    }
+
+    public void setComponentID(String componentID) {
+        this.componentID = componentID;
+    }
+
+    @Override
+    public DeviceProfile getDeviceProfile() {
+        return deviceProfile;
+    }
+
+    @Override
+    public void setDeviceProfile(DeviceProfile deviceProfile) {
+        this.deviceProfile = deviceProfile;
+    }
+
+    @Override
+    public String getDeviceID() {
+        return deviceID;
+    }
+
+    @Override
+    public void setDeviceID(String deviceID) {
+        this.deviceID = deviceID;
+    }
 
     @Override
     public String getComponentRuntimeID() {
@@ -47,6 +77,7 @@ public abstract class BaseLayoutGroupComponent extends LayoutGroupBaseImpl imple
                     continue;
                 }
                 ILayoutComponent comp = (ILayoutComponent) layoutCmp;
+
                 errMsg = comp.verifyDeviceConfig(profiles, deviceProfileNames);
                 if (errMsg != null && !errMsg.isEmpty()) {
                     sb.append(errMsg).append("\r\n");

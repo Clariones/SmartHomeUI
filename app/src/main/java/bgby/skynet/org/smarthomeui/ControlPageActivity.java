@@ -45,7 +45,7 @@ public class ControlPageActivity extends FragmentActivity {
         txtPageName = (TextView) findViewById(R.id.cmptpage_pageName);
         btnMenu = (ImageButton) findViewById(R.id.cmptpage_menuIcon);
         layoutStatusBar =  findViewById(R.id.cmptpage_statusBar);
-        layoutStatusBar.getBackground().setAlpha(128);
+//        layoutStatusBar.getBackground().setAlpha(128);
         applyMaterials();
 
 

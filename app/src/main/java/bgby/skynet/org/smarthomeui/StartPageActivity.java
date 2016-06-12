@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.method.ScrollingMovementMethod;
@@ -50,6 +51,7 @@ public class StartPageActivity extends Activity {
     protected View startingPhaseContentView;
     protected Handler progressHandler;
     private UIControllerManager uiControlManager;
+    private Thread startingThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +86,12 @@ public class StartPageActivity extends Activity {
             return;
         }
 
-        new Thread(){
+        this.startingThread = new Thread(){
             public void run(){
                 startWorking();
             }
-        }.start();
+        };
+        startingThread.start();
 
 
 //        callback.onProgress(0.35, "测试", "在干什么事");
@@ -158,7 +161,8 @@ public class StartPageActivity extends Activity {
         callback.onProgress(0.01, "加载素材", "正在加载素材包...");
         this.materialManager = new MaterialsManager();
         materialManager.setContext(this.getBaseContext());
-        File dir = this.getFilesDir();
+        String folderName = PreferenceManager.getDefaultSharedPreferences(this).getString(SettingsFragment.KEY_MATERIAL_FOLDER, "smarthome");
+        File dir = new File(Environment.getExternalStorageDirectory(), folderName);
         File zipPackage = new File(dir, "uidata.zip");
         File propertyFile = new File(dir, "uidata.properties");
         try {
@@ -197,7 +201,12 @@ public class StartPageActivity extends Activity {
     }
 
 
+    private void stopStarting(){
+        uiControlManager.stopStartingThread();
+        startingThread.interrupt();
+    }
     private void gotoSettingPage() {
+        stopStarting();
         DriverUtils.log(Level.WARNING, TAG, "Basical setting not set. Open preferneces page" );
         Intent intent=new Intent();
         intent.setClassName(this, SettingsActivity.class.getName());

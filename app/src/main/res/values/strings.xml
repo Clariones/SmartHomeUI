@@ -12,4 +12,5 @@
     <string name="btn_open_settings">修改配置</string>
     <string name="common_undefined_device_name">---</string>
     <string name="common_undefined_value">--</string>
+    <string name="pref_title_material_folder">素材位置</string>
 </resources>

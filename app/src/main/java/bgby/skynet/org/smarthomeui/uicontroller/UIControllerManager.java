@@ -2,6 +2,7 @@ package bgby.skynet.org.smarthomeui.uicontroller;
 
 import com.google.gson.Gson;
 
+import org.skynet.bgby.device.DeviceProfile;
 import org.skynet.bgby.driverutils.DriverUtils;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutUtils;
@@ -42,6 +43,8 @@ public class UIControllerManager {
     private String queryLayoutResult;
     private CmdGetProfileByDevice.DeviceProfilesRestResult queryProfileResult;
     private List<ILayout> layoutPages;
+    private Thread startingThread;
+    private boolean starting;
 
     public List<ILayout> getLayoutPages() {
         return layoutPages;
@@ -55,6 +58,9 @@ public class UIControllerManager {
     }
 
     private boolean hasError(UIControllerStatus status) {
+        if (!starting){
+            return true;
+        }
         Helper.setProgress(status, getProgressCallback());
         if (!status.isSuccess()) {
             Helper.reportError(getErrorDetailReport(), getProgressCallback());
@@ -75,14 +81,16 @@ public class UIControllerManager {
      *
      */
     public void start() {
-        new Thread() {
+        this.startingThread = new Thread() {
             public void run() {
                 startStepByStep();
             }
-        }.start();
+        };
+        startingThread.start();
     }
 
     protected void startStepByStep() {
+        this.starting = true;
         clearErrorReport();
         // step1 - 先校验本地的启动参数
         if (hasError(verifyInitialParams())) {
@@ -133,6 +141,7 @@ public class UIControllerManager {
             errorReport(errSb.toString());
             return UIControllerStatus.INVALID_DEVICE_DATA;
         }
+
         return UIControllerStatus.CREATE_LAYOUT;
     }
 
@@ -298,8 +307,22 @@ public class UIControllerManager {
         errorReport.append(string).append("\r\n");
     }
 
+    public DeviceProfile getDeviceProfile(String deviceId){
+        if (queryProfileResult == null || queryProfileResult.getDevices() == null || queryProfileResult.getProfiles() == null){
+            return null;
+        }
+
+        String profileId = queryProfileResult.getDevices().get(deviceId);
+        DeviceProfile profile = queryProfileResult.getProfiles().get(profileId);
+        return profile;
+    }
     public void setProgressCallback(IInitialProgressCallback progressCallback) {
         this.progressCallback = progressCallback;
+    }
+
+    public void stopStartingThread() {
+        starting = false;
+        startingThread.interrupt();
     }
 
     public class MulticastMessageListener implements IUdpMessageHandler {

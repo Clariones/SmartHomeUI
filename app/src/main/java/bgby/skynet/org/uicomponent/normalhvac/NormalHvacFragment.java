@@ -1,5 +1,6 @@
 package bgby.skynet.org.uicomponent.normalhvac;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +19,7 @@ public class NormalHvacFragment extends BaseUiComponent {
     protected static final String MATERIAL_MODE_ICON = "normalHVAC/summary/1x1/runningMode/";
     protected static final String MATERIAL_TEMPERATURE = "normalHVAC/summary/1x1/roomTemperature";
     protected static final String MATERIAL_NAME = "normalHVAC/summary/1x1/displayName";
+
 
 
     protected View viewBackground;
@@ -57,13 +59,28 @@ public class NormalHvacFragment extends BaseUiComponent {
         applyMaterials();
         updateValues();
         Log.d("CREATE FRAGMENT", "Finish Create " + this.getClass().getSimpleName());
+
+        imgModeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openControlPage();
+            }
+        });
         return view;
+    }
+
+    private void openControlPage() {
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), NormalHvacControlActivity.class);
+        String deviceId = getLayoutData().getDeviceID();
+        intent.putExtra(ARG_DEVICE_ID,deviceId);
+        getActivity().startActivity(intent);
     }
 
     private void updateValues() {
         INormalHvacDevice device = (INormalHvacDevice) getLayoutData();
-        currentMode = device.getCurrentRunningMode();
-        currentTemperature= device.getCurrentRoomTemperature();
+        currentMode = device.getRunningMode();
+        currentTemperature= device.getRoomTemperature();
         displayName = device.getDeviceDisplayName();
 
         updateDisplayMode();

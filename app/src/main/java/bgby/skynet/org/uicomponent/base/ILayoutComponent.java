@@ -11,6 +11,8 @@ import java.util.Map;
  * Created by Clariones on 6/2/2016.
  */
 public interface ILayoutComponent extends ILayout {
+    public static final String PARAM_DEVICE_ID = "deviceID";
+
     /**
      *
      * @param profiles
@@ -22,6 +24,14 @@ public interface ILayoutComponent extends ILayout {
     String verifySelfDeviceConfig(Map<String, DeviceProfile> profiles, Map<String, String> deviceProfileNames);
 
     void setDisplayName(String displayName);
+
+    DeviceProfile getDeviceProfile();
+
+    void setDeviceProfile(DeviceProfile deviceProfile);
+
+    String getDeviceID();
+
+    void setDeviceID(String deviceID);
 
     String getDisplayName();
 

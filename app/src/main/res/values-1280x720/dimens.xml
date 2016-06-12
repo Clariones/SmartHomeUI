@@ -7,4 +7,6 @@
     <dimen name="cmptactivity_normal_hvac_settemperature_textsize">12dp</dimen>
     <dimen name="cmptactivity_normal_hvac_roomhumidity_textsize">24dp</dimen>
     <dimen name="cmptactivity_normal_hvac_button_size">48dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_button_margin">30dp</dimen>
+    <dimen name="cmptactivity_normal_hvac_selection_text_size">32dp</dimen>
 </resources>
