@@ -1,6 +1,6 @@
 package bgby.skynet.org.smarthomeui.layoutcomponent;
 
-import org.skynet.bgby.device.DeviceProfile;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutBaseImpl;
 import org.skynet.bgby.layout.LayoutException;
@@ -77,6 +77,14 @@ public abstract class BaseLayoutComponent extends LayoutBaseImpl implements ILay
             initWithProfile();
         }
         return verifySelfDeviceConfig(profiles, deviceProfileNames);
+    }
+
+    public String getParamString(Map<String, Object> params, String key, String defVal) {
+        Object value = params.get(key);
+        if (value == null){
+            return defVal;
+        }
+        return String.valueOf(value);
     }
 
     protected abstract void initWithProfile();

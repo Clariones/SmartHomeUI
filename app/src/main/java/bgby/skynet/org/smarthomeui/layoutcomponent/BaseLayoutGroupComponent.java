@@ -1,6 +1,6 @@
 package bgby.skynet.org.smarthomeui.layoutcomponent;
 
-import org.skynet.bgby.device.DeviceProfile;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutException;
 import org.skynet.bgby.layout.LayoutGroupBaseImpl;

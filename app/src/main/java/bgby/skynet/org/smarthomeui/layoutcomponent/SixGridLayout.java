@@ -3,7 +3,7 @@ package bgby.skynet.org.smarthomeui.layoutcomponent;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import org.skynet.bgby.device.DeviceProfile;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.layout.ILayout;
 
 import java.util.List;

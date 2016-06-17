@@ -19,7 +19,7 @@ public class BaseMaterial implements IMaterial {
     }
 
     @Override
-    public void applyToImageDrawble(ImageView view) {
+    public void applyToDrawableImage(ImageView view) {
         // by default, do nothing
     }
 }

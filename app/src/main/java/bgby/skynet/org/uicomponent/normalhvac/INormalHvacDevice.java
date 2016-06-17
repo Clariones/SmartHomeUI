@@ -1,14 +1,11 @@
 package bgby.skynet.org.uicomponent.normalhvac;
 
-import java.util.Map;
-
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 
 /**
  * Created by Clariones on 6/4/2016.
  */
 public interface INormalHvacDevice extends ILayoutComponent {
-    String getParamString(Map<String, Object> params, String key, String defVal);
 
     boolean isHasHumidity();
 

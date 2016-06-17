@@ -2,7 +2,7 @@ package bgby.skynet.org.uicomponent.base;
 
 import android.support.v4.app.Fragment;
 
-import org.skynet.bgby.device.DeviceProfile;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.layout.ILayout;
 
 import java.util.Map;

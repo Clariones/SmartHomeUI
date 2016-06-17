@@ -56,7 +56,7 @@ public class BaseUiComponent extends Fragment implements  IUiComponent{
             return;
         }
         Log.d(TAG, "apply image for " + meaterialName + " not found");
-        drawable.applyToImageDrawble(imgView);
+        drawable.applyToDrawableImage(imgView);
     }
 
     protected void applyBackground(View view, String meaterialName) {

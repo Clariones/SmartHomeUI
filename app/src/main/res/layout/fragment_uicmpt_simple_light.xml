@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="bgby.skynet.org.uicomponent.simplelight.simplelightFragment">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/cmpt_simplelight_background"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="@dimen/cmptsummary_icon_width"
+                android:layout_height="@dimen/cmptsummary_icon_height"
+                android:id="@+id/cmpt_simplelight_mode_icon" />
+
+        </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/cmptsummary_name_size"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/common_undefined_device_name"
+            android:id="@+id/cmpt_simplelight_name" />
+    </LinearLayout>
+
+
+</RelativeLayout>

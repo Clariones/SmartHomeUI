@@ -19,17 +19,30 @@ import org.skynet.bgby.layout.ILayout;
 
 import java.util.List;
 
-import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
+import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.smarthomeui.utils.Logger4Andriod;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 
 public class ControlPageActivity extends FragmentActivity {
+    public static final String MATERIAL_ID_LAND_BACKGROUND = "app/homepage/landscape/background";
+    public static final String MATERIAL_ID_LAND_STATUS_BAR = "app/homepage/landscape/statusbar/background";
+    public static final String MATERIAL_ID_LAND_LOGO = "app/homepage/landscape/statusbar/logo";
+    public static final String MATERIAL_ID_LAND_NAME = "app/homepage/landscape/statusbar/name";
+    public static final String MATERIAL_ID_LAND_MENU = "app/homepage/landscape/statusbar/menu";
+
+    public static final String MATERIAL_ID_PORT_BACKGROUND = "app/homepage/portrait/background";
+    public static final String MATERIAL_ID_PORT_STATUS_BAR = "app/homepage/portrait/statusbar/background";
+    public static final String MATERIAL_ID_PORT_LOGO = "app/homepage/portrait/statusbar/logo";
+    public static final String MATERIAL_ID_PORT_NAME = "app/homepage/portrait/statusbar/name";
+    public static final String MATERIAL_ID_PORT_MENU = "app/homepage/portrait/statusbar/menu";
+
     protected ViewPager viewPager;
     protected ImageView imgLogoIcon;
     protected TextView txtPageName;
     protected ImageButton btnMenu;
     protected View layoutStatusBar;
+    protected View wholeView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +53,7 @@ public class ControlPageActivity extends FragmentActivity {
         setContentView(R.layout.activity_control_page);
 
 
+        wholeView = findViewById(R.id.cmptpage_whole_view);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         imgLogoIcon = (ImageView) findViewById(R.id.cmptpage_logoIcon);
         txtPageName = (TextView) findViewById(R.id.cmptpage_pageName);
@@ -113,36 +127,20 @@ public class ControlPageActivity extends FragmentActivity {
 
     private void applyMaterials(){
         int direction = getRequestedOrientation();
-        Log.i("ADAS", "Required Direction is " + direction);
-        applyHomepageBackground(direction);
-        applyLogo(direction);
+        MaterialsManager mmng = Controllers.getMaterialsManager();
+        if (direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT){
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, imgLogoIcon, MATERIAL_ID_PORT_LOGO, MaterialsManager.MATERIAL_ID_LOGO);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, txtPageName, MATERIAL_ID_PORT_NAME, null);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, btnMenu, MATERIAL_ID_PORT_MENU, null);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_BACKGROUND, layoutStatusBar, MATERIAL_ID_PORT_STATUS_BAR, null);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_BACKGROUND, wholeView, MATERIAL_ID_PORT_BACKGROUND, null);
+        }else{
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, imgLogoIcon, MATERIAL_ID_LAND_LOGO, MaterialsManager.MATERIAL_ID_LOGO);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, txtPageName, MATERIAL_ID_LAND_NAME, null);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, btnMenu, MATERIAL_ID_LAND_MENU, null);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_BACKGROUND, layoutStatusBar, MATERIAL_ID_LAND_STATUS_BAR, null);
+            mmng.applyMaterial(MaterialsManager.APPLY_TO_BACKGROUND, wholeView, MATERIAL_ID_LAND_BACKGROUND, null);
+        }
     }
 
-    protected static final String MATERIAL_ID_LOGO_LANSCAPE = "app/statusbar/landscape/logo";
-    protected static final String MATERIAL_ID_LOGO_PORTAIT = "app/statusbar/portrait/logo";
-    private void applyLogo(int direction) {
-        String bkgId = MATERIAL_ID_LOGO_LANSCAPE;
-        if (direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT){
-            bkgId = MATERIAL_ID_LOGO_PORTAIT;
-        }
-        IMaterial material = Controllers.getMaterialsManager().getMaterial(bkgId);
-        if (material == null){
-            return;
-        }
-        material.applyToBackgroup(findViewById(R.id.cmptpage_logoIcon));
-    }
-
-    protected static final String MATERIAL_ID_BKG_LANSCAPE = "app/homepage/landscape/background";
-    protected static final String MATERIAL_ID_BKG_PORTAIT = "app/homepage/portrait/background";
-    private void applyHomepageBackground(int direction) {
-        String bkgId = MATERIAL_ID_BKG_LANSCAPE;
-        if (direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT){
-            bkgId = MATERIAL_ID_BKG_PORTAIT;
-        }
-        IMaterial material = Controllers.getMaterialsManager().getMaterial(bkgId);
-        if (material == null){
-            return;
-        }
-        material.applyToBackgroup(findViewById(R.id.ctrlpage_whole_view));
-    }
 }

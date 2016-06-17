@@ -168,7 +168,7 @@ public class NormalHvacControlActivity extends FragmentActivity {
     protected void applyMaterials() {
         String direction = getDirectionName();
         // background
-        MaterialInfo.push(MaterialInfo.BACKGROUND, view, direction, MATERIAL_ID_PREFIX + "/logo", "app/homepage/" + direction + "/background");
+        MaterialInfo.push(MaterialInfo.BACKGROUND, view, direction, MATERIAL_ID_PREFIX + "/background", "app/homepage/" + direction + "/background");
         // status bar
         MaterialInfo.push(MaterialInfo.BACKGROUND, statuesBarBackground, direction, MATERIAL_ID_PREFIX + "/statusbar/background", null);
         MaterialInfo.push(MaterialInfo.IMAGE, imgLogo, direction, MATERIAL_ID_PREFIX + "/statusbar/logo", MaterialsManager.MATERIAL_ID_LOGO);
@@ -181,8 +181,8 @@ public class NormalHvacControlActivity extends FragmentActivity {
         MaterialInfo.push(MaterialInfo.FONT, txtSetTemperature, direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_SET_TEMPERATURE, null);
         MaterialInfo.push(MaterialInfo.FONT, findViewById(R.id.normalHvac_temperature_set_unit), direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_SET_TEMPERATURE, null);
         // humidity
-        MaterialInfo.push(MaterialInfo.IMAGE, imgHumidity, direction, MATERIAL_ID_PREFIX + "/temperature/icon", MaterialsManager.MATERIAL_ID_TEMPERATURE);
-        MaterialInfo.push(MaterialInfo.FONT, txtRoomHumidity, direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_ROOM_HUMIDITY, null);
+        MaterialInfo.push(MaterialInfo.IMAGE, imgHumidity, direction, MATERIAL_ID_PREFIX + "/humidity/icon", MaterialsManager.MATERIAL_ID_TEMPERATURE);
+        MaterialInfo.push(MaterialInfo.FONT, txtRoomHumidity, direction, MATERIAL_ID_PREFIX + "/humidity/" + NormalHvacComponent.TERM_ROOM_HUMIDITY, null);
         // progress bar - room temperature
         String tickMarkMaterial = String.format(MATERIAL_ID_PREFIX + "/roomTemperatureBar/tickMark", direction);
         IMaterial material = Controllers.getMaterialsManager().getMaterial(tickMarkMaterial);
@@ -229,6 +229,16 @@ public class NormalHvacControlActivity extends FragmentActivity {
         if (material instanceof ColorMaterial) {
             barSetTemperature.setProgressBarBackgroundColor(((ColorMaterial) material).getColor());
         }
+        // Temperature seek bar
+        material = MaterialInfo.getMaterial("/setTemperatureDisk/background", direction);
+        if (material instanceof DrawableMaterail) {
+            sliderSetTemperature.setWheel(((DrawableMaterail) material).getDrawable());
+        }
+        material = MaterialInfo.getMaterial("/setTemperatureDisk/pointer", direction);
+        if (material instanceof DrawableMaterail) {
+            sliderSetTemperature.setArrow(((DrawableMaterail) material).getDrawable());
+        }
+
         MaterialInfo.applyMaterials();
     }
 
@@ -307,7 +317,7 @@ public class NormalHvacControlActivity extends FragmentActivity {
     private void applySelectedIcon(String mode, String[] validModes, Drawable[] drawables, ImageView view) {
         if (mode == null) {
             IMaterial material = getSystemDefaultIcon(0);
-            material.applyToImageDrawble(view);
+            material.applyToDrawableImage(view);
             return;
         }
 
@@ -359,7 +369,7 @@ public class NormalHvacControlActivity extends FragmentActivity {
                 }
                 switch (task.action) {
                     case IMAGE:
-                        task.material.applyToImageDrawble((ImageView) task.view);
+                        task.material.applyToDrawableImage((ImageView) task.view);
                         break;
                     case FONT:
                         task.material.applyToFont((TextView) task.view);

@@ -12,5 +12,5 @@ public interface IMaterial {
 
     void applyToFont(TextView view);
 
-    void applyToImageDrawble(ImageView imgView);
+    void applyToDrawableImage(ImageView imgView);
 }

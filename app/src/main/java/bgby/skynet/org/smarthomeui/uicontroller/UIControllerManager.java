@@ -1,8 +1,13 @@
 package bgby.skynet.org.smarthomeui.uicontroller;
 
-import com.google.gson.Gson;
+import android.util.Log;
 
-import org.skynet.bgby.device.DeviceProfile;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+
+import org.skynet.bgby.command.management.CmdGetLayout;
+import org.skynet.bgby.command.management.CmdGetProfileByDevice;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.driverutils.DriverUtils;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutUtils;
@@ -13,9 +18,6 @@ import org.skynet.bgby.listeningserver.MessageService.UdpMessageHandlingContext;
 import org.skynet.bgby.protocol.IHttpResponse;
 import org.skynet.bgby.protocol.IRestRequest;
 import org.skynet.bgby.protocol.RestRequestImpl;
-import org.skynet.bgby.protocol.RestResponseImpl;
-import org.skynet.bgby.protocol.restmanagecommand.CmdGetLayout;
-import org.skynet.bgby.protocol.restmanagecommand.CmdGetProfileByDevice;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.util.logging.Level;
 
 import bgby.skynet.org.smarthomeui.layoutcomponent.ControlPage;
 import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.SimpleLightComponent;
 import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayout;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
@@ -55,6 +58,7 @@ public class UIControllerManager {
         LayoutUtils.registerLayoutType(ControlPage.TYPE, ControlPage.class);
         LayoutUtils.registerLayoutType(NormalHvacComponent.TYPE, NormalHvacComponent.class);
         LayoutUtils.registerLayoutType(SixGridLayout.TYPE, SixGridLayout.class);
+        LayoutUtils.registerLayoutType(SimpleLightComponent.TYPE, SimpleLightComponent.class);
     }
 
     private boolean hasError(UIControllerStatus status) {
@@ -192,15 +196,16 @@ public class UIControllerManager {
             errorReport("Error: " + response.getAsString());
             return UIControllerStatus.REQUEST_DEVICE_DATA_FAIL;
         }
-        RestResponseImpl restResp = new Gson().fromJson(response.getAsString(), RestResponseImpl.class);
+        Helper.RestResponseData restResp = new Gson().fromJson(response.getAsString(), Helper.RestResponseData.class);
         if (restResp.getErrorCode() != 0) {
             errorReport("Error: " + restResp.getResult());
             return UIControllerStatus.REQUEST_DEVICE_DATA_FAIL;
         }
-        String data = (String) restResp.getData();
-        System.out.println();
-        System.out.println(data);
-        queryProfileResult = new Gson().fromJson(data, CmdGetProfileByDevice.DeviceProfilesRestResult.class);
+//        String data = (String) restResp.getData();
+//        System.out.println();
+//        System.out.println(data);
+        queryProfileResult = Helper.gson.fromJson(restResp.getData(), CmdGetProfileByDevice.DeviceProfilesRestResult.class);
+        JsonArray jArray = new JsonArray();
         return UIControllerStatus.VERIFY_DEVICE_DATA;
     }
 
@@ -229,12 +234,14 @@ public class UIControllerManager {
             errorReport(response.getAsString());
             return UIControllerStatus.REQUEST_LAYOUT_FAIL;
         }
-        RestResponseImpl restResp = new Gson().fromJson(response.getAsString(), RestResponseImpl.class);
+//        RestResponseImpl restResp = new Gson().fromJson(response.getAsString(), RestResponseImpl.class);
+        Helper.RestResponseData restResp = new Gson().fromJson(response.getAsString(), Helper.RestResponseData.class);
         if (restResp.getErrorCode() != 0) {
             errorReport(restResp.getResult() + "\r\nDetails:\r\n" + restResp.getData());
             return UIControllerStatus.NO_LAYOUT;
         }
-        queryLayoutResult = (String) restResp.getData();
+        queryLayoutResult = restResp.getData().toString();
+        Log.i(TAG, queryLayoutResult);
         return UIControllerStatus.VERIFY_LAYOUT;
     }
 

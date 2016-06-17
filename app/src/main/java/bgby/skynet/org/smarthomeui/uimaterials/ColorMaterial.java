@@ -26,7 +26,7 @@ public class ColorMaterial extends BaseMaterial{
     }
 
     @Override
-    public void applyToImageDrawble(ImageView view) {
+    public void applyToDrawableImage(ImageView view) {
         view.setBackgroundColor(getColor());
     }
 }

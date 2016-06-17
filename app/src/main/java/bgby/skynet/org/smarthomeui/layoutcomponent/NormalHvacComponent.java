@@ -2,7 +2,7 @@ package bgby.skynet.org.smarthomeui.layoutcomponent;
 
 import android.support.v4.app.Fragment;
 
-import org.skynet.bgby.device.DeviceProfile;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 
 import java.util.Map;
 
@@ -53,15 +53,6 @@ public static final String TYPE = "normalHVAC";
 	@Override
 	protected void initByParameters(Map<String, Object> params) {
 		deviceID = getParamString(params, PARAM_DEVICE_ID, null);
-	}
-
-	@Override
-	public String getParamString(Map<String, Object> params, String key, String defVal) {
-		Object value = params.get(key);
-		if (value == null){
-			return defVal;
-		}
-		return String.valueOf(value);
 	}
 
 	protected void initWithProfile(){
@@ -209,13 +200,6 @@ public static final String TYPE = "normalHVAC";
 
 	@Override
 	public String verifySelfDeviceConfig(Map<String, DeviceProfile> profiles, Map<String, String> deviceProfileNames) {
-//		protected boolean hasHumidity = false;
-//		protected Double roomTemperatureLowLimit;
-//		protected Double roomTemperatureHighLimit;
-//		protected Double settingTemperatureLowLimit;
-//		protected Double settingTemperatureHighLimit;
-//		protected String[] runningModes = null;
-//		protected String[] fanSpeeds = null;
 		if (roomTemperatureLowLimit == null || roomTemperatureHighLimit == null){
 			return "类型为" + TYPE +"的设备，必须设定特征参数" + TERM_ROOM_TEMPERATURE_RANGE + "，值为长度为2的Double数组";
 		}

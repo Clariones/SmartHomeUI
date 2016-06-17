@@ -6,6 +6,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,6 +34,10 @@ import java.util.zip.ZipInputStream;
  * Created by Clariones on 6/1/2016.
  */
 public class MaterialsManager {
+    public static final int APPLY_TO_BACKGROUND = 0;
+    public static final int APPLY_TO_DRAWABLE_IMAGE = 1;
+    public static final int APPLY_TO_FONT = 2;
+
     public static final String MATERIAL_ID_DEF0 = "app/default/system/0";
     public static final String MATERIAL_ID_DEF1 = "app/default/system/1";
     public static final String MATERIAL_ID_DEF2 = "app/default/system/2";
@@ -63,7 +70,7 @@ public class MaterialsManager {
     protected Properties customMaterialConfig;
 
     public IMaterial getMaterial(String key) {
-        if (key  == null || key.isEmpty()){
+        if (key == null || key.isEmpty()) {
             return null;
         }
         IMaterial material = getMaterialFromPackage(key, customMaterialConfig, customMaterials);
@@ -95,7 +102,13 @@ public class MaterialsManager {
         if (resourceName == null) {
             return null;
         }
-        IMaterial result = materials.get(resourceName);
+        IMaterial result = null;
+        if (customMaterials != null){
+            result = customMaterials.get(resourceName);
+        }
+        if (result == null){
+            result = defaultMaterials.get(resourceName);
+        }
         return result;
     }
 
@@ -311,5 +324,36 @@ public class MaterialsManager {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public void applyMaterial(int applyType, View view, String materialId, String defMaterialID) {
+        IMaterial material = this.getMaterial(materialId);
+        if (material == null && defMaterialID != null) {
+            Log.d(TAG, materialId + " not found. Try " + defMaterialID);
+            material = this.getMaterial(defMaterialID);
+        }
+        if (material == null) {
+            Log.d(TAG, "neither " + materialId + " nor " + defMaterialID + " found. Skip.");
+            return; //
+        }
+        switch (applyType) {
+            case APPLY_TO_BACKGROUND:
+                material.applyToBackgroup(view);
+                break;
+            case APPLY_TO_DRAWABLE_IMAGE:
+                if (view instanceof ImageView) {
+                    material.applyToDrawableImage((ImageView) view);
+                }else{
+                    Log.w(TAG, materialId + " is not apply to an ImageView. Skip");
+                }
+                break;
+            case APPLY_TO_FONT:
+                if (view instanceof TextView) {
+                    material.applyToFont((TextView) view);
+                }else{
+                    Log.w(TAG, materialId + " is not apply to an TextView. Skip");
+                }
+                break;
+        }
     }
 }

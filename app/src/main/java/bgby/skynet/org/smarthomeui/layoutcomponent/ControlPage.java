@@ -1,10 +1,8 @@
 package bgby.skynet.org.smarthomeui.layoutcomponent;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.view.View;
 
-import org.skynet.bgby.device.DeviceProfile;
+import org.skynet.bgby.deviceprofile.DeviceProfile;
 
 import java.util.Map;
 
