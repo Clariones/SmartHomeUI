@@ -9,7 +9,7 @@ public interface ISimpleLightDevice extends ILayoutComponent {
 
     boolean getState();
 
-    void setState(boolean newState);
+    void setState(boolean newState, IResponseListener listener);
 
-    void toggleState();
+    void toggleState(IResponseListener listener);
 }

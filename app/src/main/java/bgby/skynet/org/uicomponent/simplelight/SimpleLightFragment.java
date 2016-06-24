@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Map;
 
 import bgby.skynet.org.smarthomeui.R;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
@@ -17,7 +20,7 @@ import bgby.skynet.org.uicomponent.base.BaseUiComponent;
 /**
  * Created by Clariones on 6/14/2016.
  */
-public class SimpleLightFragment extends BaseUiComponent {
+public class SimpleLightFragment extends BaseUiComponent implements IResponseListener {
     protected static final String MATERIAL_BACKGROUD = "simpleLight/summary/1x1/background/";
     protected static final String MATERIAL_ON_ICON = "simpleLight/summary/1x1/state/on";
     protected static final String MATERIAL_OFF_ICON = "simpleLight/summary/1x1/state/off";
@@ -81,7 +84,21 @@ public class SimpleLightFragment extends BaseUiComponent {
 
     private void toggleLight() {
         ISimpleLightDevice device = (ISimpleLightDevice) this.getLayoutData();
-        device.toggleState();
-        updateValues();
+        device.toggleState(this);
+//        updateValues();
+    }
+
+    @Override
+    public void onResponse(final int errorCode, final String errTitle, final Map<String, Object> responseData) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (errorCode != 0){
+                    Toast.makeText(getActivity(), errTitle, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                updateValues();
+            }
+        });
     }
 }

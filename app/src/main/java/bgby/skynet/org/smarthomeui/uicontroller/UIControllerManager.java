@@ -18,6 +18,8 @@ import org.skynet.bgby.listeningserver.MessageService.UdpMessageHandlingContext;
 import org.skynet.bgby.protocol.IHttpResponse;
 import org.skynet.bgby.protocol.IRestRequest;
 import org.skynet.bgby.protocol.RestRequestImpl;
+import org.skynet.bgby.restserver.IRestClientCallback;
+import org.skynet.bgby.restserver.IRestClientContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -330,6 +332,16 @@ public class UIControllerManager {
     public void stopStartingThread() {
         starting = false;
         startingThread.interrupt();
+    }
+
+    public void executeCmd(final IRestRequest request, final IRestCommandListener listener) {
+        InetSocketAddress serverAddress = new InetSocketAddress(startConfig.getDriverProxyAddress(), startConfig.getDriverProxyPort());
+        restClient.asynchRequest(serverAddress, null, request, new IRestClientCallback() {
+            @Override
+            public void onRestResponse(IRestClientContext restClientContext, IHttpResponse httpResponse) {
+                listener.handleResponse(request, restClientContext, httpResponse);
+            }
+        });
     }
 
     public class MulticastMessageListener implements IUdpMessageHandler {
