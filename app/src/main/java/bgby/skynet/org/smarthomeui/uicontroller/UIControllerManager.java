@@ -1,15 +1,17 @@
 package bgby.skynet.org.smarthomeui.uicontroller;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.GsonBuilder;
 
 import org.skynet.bgby.command.management.CmdGetLayout;
 import org.skynet.bgby.command.management.CmdGetProfileByDevice;
 import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.driverutils.DriverUtils;
 import org.skynet.bgby.layout.ILayout;
+import org.skynet.bgby.layout.LayoutData;
 import org.skynet.bgby.layout.LayoutUtils;
 import org.skynet.bgby.listeningserver.IUdpMessageHandler;
 import org.skynet.bgby.listeningserver.ListeningServerException;
@@ -18,27 +20,40 @@ import org.skynet.bgby.listeningserver.MessageService.UdpMessageHandlingContext;
 import org.skynet.bgby.protocol.IHttpResponse;
 import org.skynet.bgby.protocol.IRestRequest;
 import org.skynet.bgby.protocol.RestRequestImpl;
+import org.skynet.bgby.protocol.UdpMessage;
+import org.skynet.bgby.protocol.UdpMessageCodec;
 import org.skynet.bgby.restserver.IRestClientCallback;
 import org.skynet.bgby.restserver.IRestClientContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
+import bgby.skynet.org.smarthomeui.device.DeviceException;
+import bgby.skynet.org.smarthomeui.device.Hgw2000HBusLight;
+import bgby.skynet.org.smarthomeui.device.Hgw2000HVAC;
+import bgby.skynet.org.smarthomeui.device.Hgw2000SwitchLight;
+import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.smarthomeui.layoutcomponent.ControlPage;
-import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponent;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SimpleLightComponent;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayout;
+import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponentBase;
+import bgby.skynet.org.smarthomeui.layoutcomponent.SimpleLightComponentBase;
+import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayoutBase;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.uicomponent.base.IUiComponent;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 
 public class UIControllerManager {
 
     private static final String TAG = "UIControllerManager";
+
     private IInitialProgressCallback progressCallback;
     private UIControllerConfig startConfig;
     private StringBuilder errorReport;
@@ -50,21 +65,44 @@ public class UIControllerManager {
     private List<ILayout> layoutPages;
     private Thread startingThread;
     private boolean starting;
+    private LayoutComponentManager layoutComponentManager;
+    private DeviceManager deviceManager;
+
+    public LayoutComponentManager getLayoutComponentManager() {
+        return layoutComponentManager;
+    }
+
+    public void setLayoutComponentManager(LayoutComponentManager layoutComponentManager) {
+        this.layoutComponentManager = layoutComponentManager;
+    }
+
+    public DeviceManager getDeviceManager() {
+        return deviceManager;
+    }
+
+    public void setDeviceManager(DeviceManager deviceManager) {
+        this.deviceManager = deviceManager;
+    }
 
     public List<ILayout> getLayoutPages() {
         return layoutPages;
     }
 
+
     public void init(UIControllerConfig config) {
+        // TODO update the code when new layout component need to support
         this.startConfig = config;
         LayoutUtils.registerLayoutType(ControlPage.TYPE, ControlPage.class);
-        LayoutUtils.registerLayoutType(NormalHvacComponent.TYPE, NormalHvacComponent.class);
-        LayoutUtils.registerLayoutType(SixGridLayout.TYPE, SixGridLayout.class);
-        LayoutUtils.registerLayoutType(SimpleLightComponent.TYPE, SimpleLightComponent.class);
+        LayoutUtils.registerLayoutType(NormalHvacComponentBase.TYPE, NormalHvacComponentBase.class);
+        LayoutUtils.registerLayoutType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
+        LayoutUtils.registerLayoutType(SimpleLightComponentBase.TYPE, SimpleLightComponentBase.class);
+
+        layoutComponentManager = new LayoutComponentManager();
+        deviceManager = new DeviceManager();
     }
 
     private boolean hasError(UIControllerStatus status) {
-        if (!starting){
+        if (!starting) {
             return true;
         }
         Helper.setProgress(status, getProgressCallback());
@@ -87,6 +125,7 @@ public class UIControllerManager {
      *
      */
     public void start() {
+        new Throwable("UIController stated").printStackTrace();
         this.startingThread = new Thread() {
             public void run() {
                 startStepByStep();
@@ -131,22 +170,53 @@ public class UIControllerManager {
     }
 
     private UIControllerStatus verifyDeviceProfiles() {
-        StringBuilder errSb =  new StringBuilder();
-        for(ILayout page: layoutPages){
-            if (!(page instanceof ILayoutComponent)){
-                continue;
+        try {
+            // first, support which devices
+            deviceManager.addDeviceExample(new Hgw2000SwitchLight());
+            deviceManager.addDeviceExample(new Hgw2000HBusLight());
+            deviceManager.addDeviceExample(new Hgw2000HVAC());
+
+            // second, create their instances according to query result
+            Map<String, IDevice> allDevices = deviceManager.createFromProfiles(queryProfileResult.getProfiles(), queryProfileResult.getDevices());
+
+            // next, link layout components and devices
+            Iterator<Map.Entry<String, ILayoutComponent>> it = layoutComponentManager.getAllComponents().entrySet().iterator();
+            while(it.hasNext()){
+                Map.Entry<String, ILayoutComponent> ent = it.next();
+                ILayoutComponent cmpt = ent.getValue();
+                Map<String, Object> params = cmpt.getParams();
+                if (params == null || !params.containsKey(ILayoutComponent.PARAM_DEVICE_ID)){
+                    continue;
+                }
+                String devId = (String) params.get(ILayoutComponent.PARAM_DEVICE_ID);
+                cmpt.setDevice(allDevices.get(devId));
             }
-            ILayoutComponent cmp = (ILayoutComponent) page;
-            String errMsg = cmp.verifyDeviceConfig(queryProfileResult.getProfiles(), queryProfileResult.getDevices());
-            if (errMsg == null || errMsg.isEmpty()){
-                continue;
-            }
-            errSb.append(errMsg).append("\r\n");
-        }
-        if (errSb.length()>0){
+        } catch (DeviceException e) {
+            e.printStackTrace();
+            String errSb = DriverUtils.dumpExceptionToString(e);
             errorReport(errSb.toString());
             return UIControllerStatus.INVALID_DEVICE_DATA;
         }
+
+//        // ----------- below are deprecated
+//        StringBuilder errSb = new StringBuilder();
+//        for (ILayout page : layoutPages) {
+//            if (!(page instanceof ILayoutComponent)) {
+//                continue;
+//            }
+//            ILayoutComponent cmp = (ILayoutComponent) page;
+//            String errMsg = cmp.verifyDeviceConfig(queryProfileResult.getProfiles(), queryProfileResult.getDevices());
+//            if (errMsg == null || errMsg.isEmpty()) {
+//                continue;
+//            }
+//            errSb.append(errMsg).append("\r\n");
+//        }
+//        if (errSb.length() > 0) {
+//            errorReport(errSb.toString());
+//            return UIControllerStatus.INVALID_DEVICE_DATA;
+//        }
+//
+//        createDevices();
 
         return UIControllerStatus.CREATE_LAYOUT;
     }
@@ -155,9 +225,30 @@ public class UIControllerManager {
         InputStream ins = null;
         try {
             // first, register which type of layout we can support
+            layoutComponentManager.registerLayoutComponentType(ControlPage.TYPE, ControlPage.class);
+            layoutComponentManager.registerLayoutComponentType(NormalHvacComponentBase.TYPE, NormalHvacComponentBase.class);
+            layoutComponentManager.registerLayoutComponentType(SimpleLightComponentBase.TYPE, SimpleLightComponentBase.class);
+            layoutComponentManager.registerLayoutComponentType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
+
+            // second, create instances from queried result
             ins = new ByteArrayInputStream(queryLayoutResult.getBytes());
-            layoutPages = LayoutUtils.fromJson(ins);
-            DriverUtils.log(Level.INFO, TAG, "Created " + layoutPages.size() + " pages");
+            InputStreamReader reader = new InputStreamReader(ins);
+            LayoutData[] datas = new Gson().fromJson(reader, new LayoutData[0].getClass());
+            Map<String, ILayoutComponent> layoutComponents = layoutComponentManager.createComponentsFromLayoutData(datas);
+            DriverUtils.log(Level.INFO, TAG, "Created " + layoutComponents.size() + " components in " + layoutComponentManager.getRootComponents().size() + " pages");
+
+            // next verify their params
+            StringBuilder sb = new StringBuilder();
+            for(ILayoutComponent compt : layoutComponentManager.getAllComponents().values()){
+                String errMsg = compt.verifyParams();
+                if (errMsg != null){
+                    sb.append(errMsg).append("\r\n");
+                }
+            }
+            if (sb.length() > 1){
+                errorReport(sb.toString());
+                return UIControllerStatus.INVALID_LAYOUT;
+            }
         } catch (Exception e) {
             String msg = DriverUtils.dumpExceptionToString(e);
             errorReport(msg);
@@ -174,7 +265,7 @@ public class UIControllerManager {
     }
 
     private UIControllerStatus createLayoutPages() {
-        // TODO Auto-generated method stub
+        // nothing can do here
         return UIControllerStatus.INIT_DEVICES;
     }
 
@@ -182,8 +273,7 @@ public class UIControllerManager {
         IRestRequest request = new RestRequestImpl();
         request.setCommand(CmdGetProfileByDevice.CMD);
         request.setTarget(startConfig.getControllerID());
-        InetSocketAddress serverAddress = new InetSocketAddress(startConfig.getDriverProxyAddress(),
-                startConfig.getDriverProxyPort());
+        InetSocketAddress serverAddress = getDriverProxyAddress();
         IHttpResponse response = null;
         try {
             response = restClient.synchRequest(serverAddress, null, request);
@@ -203,20 +293,25 @@ public class UIControllerManager {
             errorReport("Error: " + restResp.getResult());
             return UIControllerStatus.REQUEST_DEVICE_DATA_FAIL;
         }
-//        String data = (String) restResp.getData();
-//        System.out.println();
-//        System.out.println(data);
         queryProfileResult = Helper.gson.fromJson(restResp.getData(), CmdGetProfileByDevice.DeviceProfilesRestResult.class);
-        JsonArray jArray = new JsonArray();
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            String profileResultStr = new GsonBuilder().setPrettyPrinting().create().toJson(queryProfileResult);
+            Log.d(TAG, "Got device profiles as:\n" + profileResultStr);
+        }
         return UIControllerStatus.VERIFY_DEVICE_DATA;
+    }
+
+    @NonNull
+    private InetSocketAddress getDriverProxyAddress() {
+        return new InetSocketAddress(startConfig.getDriverProxyAddress(),
+                startConfig.getDriverProxyPort());
     }
 
     private UIControllerStatus queryLayout() {
         IRestRequest request = new RestRequestImpl();
         request.setCommand(CmdGetLayout.CMD);
         request.setTarget(startConfig.getControllerID());
-        InetSocketAddress serverAddress = new InetSocketAddress(startConfig.getDriverProxyAddress(),
-                startConfig.getDriverProxyPort());
+        InetSocketAddress serverAddress = getDriverProxyAddress();
         IHttpResponse response = null;
         try {
             response = restClient.synchRequest(serverAddress, null, request);
@@ -253,11 +348,13 @@ public class UIControllerManager {
         restClient.setConnectionTimeout(30 * 1000);
         restClient.setReadTimeout(30 * 1000);
 
+
         // 启动组播监听线程
         this.messageListeningService = new MessageService();
         messageListeningService.setDamon(false);
         messageListeningService.setListeningAddress(this.startConfig.getMulticastAddress().getHostName());
         messageListeningService.setListeningPort(this.startConfig.getMulticastPort());
+        messageListeningService.setCodec(new UdpMessageCodec());
         IUdpMessageHandler handler = new MulticastMessageListener();
         messageListeningService.registerHandler(handler);
         try {
@@ -283,6 +380,10 @@ public class UIControllerManager {
 
     public IInitialProgressCallback getProgressCallback() {
         return progressCallback;
+    }
+
+    public void setProgressCallback(IInitialProgressCallback progressCallback) {
+        this.progressCallback = progressCallback;
     }
 
     private UIControllerStatus verifyInitialParams() {
@@ -316,8 +417,8 @@ public class UIControllerManager {
         errorReport.append(string).append("\r\n");
     }
 
-    public DeviceProfile getDeviceProfile(String deviceId){
-        if (queryProfileResult == null || queryProfileResult.getDevices() == null || queryProfileResult.getProfiles() == null){
+    public DeviceProfile getDeviceProfile(String deviceId) {
+        if (queryProfileResult == null || queryProfileResult.getDevices() == null || queryProfileResult.getProfiles() == null) {
             return null;
         }
 
@@ -325,17 +426,20 @@ public class UIControllerManager {
         DeviceProfile profile = queryProfileResult.getProfiles().get(profileId);
         return profile;
     }
-    public void setProgressCallback(IInitialProgressCallback progressCallback) {
-        this.progressCallback = progressCallback;
-    }
 
     public void stopStartingThread() {
         starting = false;
-        startingThread.interrupt();
+        if (startingThread != null) {
+            startingThread.interrupt();
+        }
+        if (messageListeningService != null) {
+            messageListeningService.stop();
+        }
+
     }
 
     public void executeCmd(final IRestRequest request, final IRestCommandListener listener) {
-        InetSocketAddress serverAddress = new InetSocketAddress(startConfig.getDriverProxyAddress(), startConfig.getDriverProxyPort());
+        InetSocketAddress serverAddress = getDriverProxyAddress();
         restClient.asynchRequest(serverAddress, null, request, new IRestClientCallback() {
             @Override
             public void onRestResponse(IRestClientContext restClientContext, IHttpResponse httpResponse) {
@@ -344,13 +448,49 @@ public class UIControllerManager {
         });
     }
 
+    private UdpMessage handleUdpMessage(UdpMessage inputMessage) {
+        String appId = startConfig.getControllerID();
+        String fromAppId = inputMessage.getFromApp();
+        if (appId.equals(fromAppId)) {
+            Log.d(TAG, "Ignore UDP message from self");
+            return null;
+        }
+
+        String command = inputMessage.getCommand();
+        switch (command) {
+            case UdpMessage.CMD_DEVICE_STATUS_REPORT:
+                Controllers.handleUdpMsgDeviceReport(inputMessage);
+                break;
+        }
+
+        return null;
+    }
+
+    public void registerDeviceRelatedUIComponent(IDevice device, IUiComponent baseUiComponent) {
+        // TODO
+    }
+
+    public ILayoutComponent getLayoutComponent(String componetID) {
+        if (layoutComponentManager.getAllComponents() == null){
+            return null;
+        }
+        return layoutComponentManager.getAllComponents().get(componetID);
+    }
+
+    public void unRegisterDeviceRelatedUIComponent(IDevice device, IUiComponent baseUiComponent) {
+        // TODO
+    }
+
+
     public class MulticastMessageListener implements IUdpMessageHandler {
 
         @Override
         public void handleMessage(UdpMessageHandlingContext context) {
-            // TODO Auto-generated method stub
-            System.out.println("handle somthing");
+            context.setServed(true);
+            context.setResponseMessage(handleUdpMessage(context.getInputMessage()));
         }
 
     }
+
+
 }

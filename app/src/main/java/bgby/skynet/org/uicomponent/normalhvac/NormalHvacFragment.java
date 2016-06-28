@@ -72,13 +72,12 @@ public class NormalHvacFragment extends BaseUiComponent {
     private void openControlPage() {
         Intent intent = new Intent();
         intent.setClass(getActivity(), NormalHvacControlActivity.class);
-        String deviceId = getLayoutData().getDeviceID();
-        intent.putExtra(ARG_DEVICE_ID,deviceId);
+        intent.putExtra(ARG_COMPONENT_ID,layoutData.getComponentId());
         getActivity().startActivity(intent);
     }
 
     private void updateValues() {
-        INormalHvacDevice device = (INormalHvacDevice) getLayoutData();
+        INormalHvacDevice device = (INormalHvacDevice) layoutData.getDevice();
         currentMode = device.getRunningMode();
         currentTemperature= device.getRoomTemperature();
         displayName = device.getDeviceDisplayName();

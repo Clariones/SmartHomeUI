@@ -14,6 +14,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.skynet.bgby.devicestandard.NormalHVAC;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -23,15 +25,18 @@ import bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar;
 import bgby.skynet.org.customviews.roundseekbar.OnProgressChangedListener;
 import bgby.skynet.org.customviews.roundseekbar.RoundSeekBar;
 import bgby.skynet.org.smarthomeui.R;
-import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponent;
+import bgby.skynet.org.smarthomeui.device.IDevice;
+import bgby.skynet.org.smarthomeui.uicontroller.UIControllerManager;
 import bgby.skynet.org.smarthomeui.uimaterials.ColorMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
 import bgby.skynet.org.smarthomeui.uimaterials.FontMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
+import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.uicomponent.base.IUiComponent;
 
-public class NormalHvacControlActivity extends FragmentActivity {
+public class NormalHvacControlActivity extends FragmentActivity implements IUiComponent{
 
     public static final String MATERIAL_ID_PREFIX = "normalHVAC/activity/%s";
     protected static final String TAG = "NormalHvacCtrl";
@@ -58,6 +63,14 @@ public class NormalHvacControlActivity extends FragmentActivity {
     protected ImageView imgFanMode;
     protected Drawable[] runningModeDrawables;
     protected Drawable[] fanModeDrawables;
+    private ILayoutComponent layoutComponet;
+
+    @Override
+    protected void onDestroy() {
+//        Controllers.unRegisterUIComponent(device, this);
+        Controllers.getControllerManager().unRegisterDeviceRelatedUIComponent(device, this);
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +81,14 @@ public class NormalHvacControlActivity extends FragmentActivity {
         setContentView(R.layout.cmptactivity_normal_hvac_control);
 
         Bundle bundle = this.getIntent().getExtras();
-        String deviceId = bundle.getString(NormalHvacFragment.ARG_DEVICE_ID);
+        String layoutId = bundle.getString(NormalHvacFragment.ARG_COMPONENT_ID);
+        UIControllerManager uiCtrl = Controllers.getControllerManager();
+        ILayoutComponent layout = uiCtrl.getLayoutComponent(layoutId);
+        setLayoutData(layout);
+        String deviceId = layout.getDeviceID();
         Log.i(TAG, "Create with device ID " + deviceId);
-        device = (INormalHvacDevice) Controllers.getComponentByDeviceID(deviceId);
+        device = (INormalHvacDevice) getDeviceById(deviceId);
+        Controllers.getControllerManager().registerDeviceRelatedUIComponent(device, this);
 
         initMembers();
         applyMaterials();
@@ -86,13 +104,18 @@ public class NormalHvacControlActivity extends FragmentActivity {
         updateRunningModeIcon();
     }
 
+    private IDevice getDeviceById(String deviceId) {
+        UIControllerManager ctl = Controllers.getControllerManager();
+        return ctl.getDeviceManager().getDevice(deviceId);
+    }
+
     protected void onChangeSettingTemperature(float progress) {
-        txtSetTemperature.setText(formatTemperature(progress));
+        txtSetTemperature.setText(formatToString(progress));
         barSetTemperature.setProgress(progress);
         device.setTemperatureSetting((double) progress);
     }
 
-    protected String formatTemperature(float progress) {
+    protected String formatToString(float progress) {
         return String.format(Locale.ENGLISH, "%3.1f", progress);
     }
 
@@ -126,18 +149,18 @@ public class NormalHvacControlActivity extends FragmentActivity {
 
         if (device.getRoomTemperature() != null) {
             barRoomTemperature.setProgress(device.getRoomTemperature().floatValue());
-            txtRoomTemperature.setText(formatTemperature(device.getRoomTemperature().floatValue()));
+            txtRoomTemperature.setText(formatToString(device.getRoomTemperature().floatValue()));
         }
         if (device.getTemperatureSetting() != null) {
             barSetTemperature.setProgress(device.getTemperatureSetting().floatValue());
             sliderSetTemperature.setProgress(device.getTemperatureSetting().floatValue());
-            txtSetTemperature.setText(formatTemperature(device.getTemperatureSetting().floatValue()));
+            txtSetTemperature.setText(formatToString(device.getTemperatureSetting().floatValue()));
         }
         if (!device.isHasHumidity()) {
             findViewById(R.id.nu_humidity).setVisibility(View.INVISIBLE);
         }
 
-        runningModeDrawables = getSelectionDrawables(device.getRunningModes(), NormalHvacComponent.TERM_RUNNING_MODE);
+        runningModeDrawables = getSelectionDrawables(device.getRunningModes(), NormalHVAC.TERM_RUNNING_MODE);
         imgRunningMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,7 +173,7 @@ public class NormalHvacControlActivity extends FragmentActivity {
             }
         });
 
-        fanModeDrawables = getSelectionDrawables(device.getFanModes(), NormalHvacComponent.TERM_FAN_MODE);
+        fanModeDrawables = getSelectionDrawables(device.getFanModes(), NormalHVAC.TERM_FAN_MODE);
         imgFanMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,13 +199,13 @@ public class NormalHvacControlActivity extends FragmentActivity {
         MaterialInfo.push(MaterialInfo.IMAGE, btnReturn, direction, MATERIAL_ID_PREFIX + "/statusbar/close", null);
         // temperature
         MaterialInfo.push(MaterialInfo.IMAGE, imgTemperature, direction, MATERIAL_ID_PREFIX + "/temperature/icon", MaterialsManager.MATERIAL_ID_TEMPERATURE);
-        MaterialInfo.push(MaterialInfo.FONT, txtRoomTemperature, direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_ROOM_TEMPERATURE, null);
-        MaterialInfo.push(MaterialInfo.FONT, findViewById(R.id.normalHvac_temperature_room_unit), direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_ROOM_TEMPERATURE, null);
-        MaterialInfo.push(MaterialInfo.FONT, txtSetTemperature, direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_SET_TEMPERATURE, null);
-        MaterialInfo.push(MaterialInfo.FONT, findViewById(R.id.normalHvac_temperature_set_unit), direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHvacComponent.TERM_SET_TEMPERATURE, null);
+        MaterialInfo.push(MaterialInfo.FONT, txtRoomTemperature, direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHVAC.TERM_ROOM_TEMPERATURE, null);
+        MaterialInfo.push(MaterialInfo.FONT, findViewById(R.id.normalHvac_temperature_room_unit), direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHVAC.TERM_ROOM_TEMPERATURE, null);
+        MaterialInfo.push(MaterialInfo.FONT, txtSetTemperature, direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHVAC.TERM_SET_TEMPERATURE, null);
+        MaterialInfo.push(MaterialInfo.FONT, findViewById(R.id.normalHvac_temperature_set_unit), direction, MATERIAL_ID_PREFIX + "/temperature/" + NormalHVAC.TERM_SET_TEMPERATURE, null);
         // humidity
         MaterialInfo.push(MaterialInfo.IMAGE, imgHumidity, direction, MATERIAL_ID_PREFIX + "/humidity/icon", MaterialsManager.MATERIAL_ID_TEMPERATURE);
-        MaterialInfo.push(MaterialInfo.FONT, txtRoomHumidity, direction, MATERIAL_ID_PREFIX + "/humidity/" + NormalHvacComponent.TERM_ROOM_HUMIDITY, null);
+        MaterialInfo.push(MaterialInfo.FONT, txtRoomHumidity, direction, MATERIAL_ID_PREFIX + "/humidity/" + NormalHVAC.TERM_ROOM_HUMIDITY, null);
         // progress bar - room temperature
         String tickMarkMaterial = String.format(MATERIAL_ID_PREFIX + "/roomTemperatureBar/tickMark", direction);
         IMaterial material = Controllers.getMaterialsManager().getMaterial(tickMarkMaterial);
@@ -327,6 +350,72 @@ public class NormalHvacControlActivity extends FragmentActivity {
                 break;
             }
         }
+    }
+
+    @Override
+    public void setLayoutData(ILayoutComponent layoutData) {
+        this.layoutComponet = layoutData;
+    }
+
+    @Override
+    public ILayoutComponent getLayoutData() {
+        return layoutComponet;
+    }
+
+    @Override
+    public String getDisplayName() {
+        if (device == null){
+            return null;
+        }
+        return device.getDisplayName();
+    }
+
+    @Override
+    public void onDeviceStatusChanged(IDevice layoutComponent) {
+        if (device != layoutComponent){
+            Log.w(TAG, "Why I got an message from another device?");
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateStatus();
+            }
+        });
+    }
+
+    private void updateStatus() {
+        updateFanModeIcon();
+        updateRunningModeIcon();
+        updateRoomTemperature();
+        updateSetTemperature();
+        updateHumidity();
+    }
+
+    private void updateHumidity() {
+        Double val = device.getRoomHumidity();
+        if (val == null){
+            return;
+        }
+        this.txtRoomHumidity.setText(formatToString(val.floatValue()));
+    }
+
+    private void updateSetTemperature() {
+        Double val = device.getTemperatureSetting();
+        if (val == null){
+            return;
+        }
+        this.txtSetTemperature.setText(formatToString(val.floatValue()));
+        this.barSetTemperature.setProgress(val.floatValue());
+        this.sliderSetTemperature.setProgress(val.floatValue());
+    }
+
+    private void updateRoomTemperature() {
+        Double val = device.getRoomTemperature();
+        if (val == null){
+            return;
+        }
+        this.txtRoomTemperature.setText(formatToString(val.floatValue()));
+        this.barRoomTemperature.setProgress(val.floatValue());
     }
 
     public static class MaterialInfo {

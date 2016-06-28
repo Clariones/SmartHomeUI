@@ -107,7 +107,8 @@ public class ControlPageActivity extends FragmentActivity {
 
             }
         });
-        setPageName(0);
+//        setPageName(0);
+
     }
 
     private void saveDirection(int direction) {

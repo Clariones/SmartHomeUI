@@ -1,34 +1,20 @@
 package bgby.skynet.org.smarthomeui.layoutcomponent;
 
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
-import org.skynet.bgby.deviceprofile.DeviceProfile;
+import bgby.skynet.org.uicomponent.cmptpage.PageFragment;
 
-import java.util.Map;
-
-import bgby.skynet.org.smarthomeui.cmptpage.CmptPageFragment;
-
-public class ControlPage extends BaseLayoutGroupComponent {
+public class ControlPage extends LayoutComponentBaseImpl {
 
 	public static final String TYPE = "page";
-	protected Fragment fragment;
-	public String getType(){
-		return TYPE;
-	}
-
-	@Override
-	public String verifySelfDeviceConfig(Map<String, DeviceProfile> profiles, Map<String, String> deviceProfileNames) {
-		return null; // for page, no parameters are used, so always success when verify
-	}
 
 	@Override
 	public Fragment getFragment() {
-//		if (fragment != null){
-//			return fragment;
-//		}
-
-		CmptPageFragment fgmt = CmptPageFragment.newInstance(this.getComponentRuntimeID());
-		fragment = fgmt;
-		return fragment;
+		PageFragment fgmt = PageFragment.newInstance(getComponentId());
+		Log.d(TYPE, "Create PageFragment");
+		return fgmt;
 	}
+
+
 }

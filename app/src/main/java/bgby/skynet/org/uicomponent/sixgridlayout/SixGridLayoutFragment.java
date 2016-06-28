@@ -1,4 +1,4 @@
-package bgby.skynet.org.smarthomeui.cmptlayout;
+package bgby.skynet.org.uicomponent.sixgridlayout;
 
 
 import android.content.Context;
@@ -12,13 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import org.skynet.bgby.layout.ILayout;
-
 import java.util.List;
 import java.util.Map;
 
 import bgby.skynet.org.customviews.averagedgridlayout.AveragedGridLayout;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayout;
+import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayoutBase;
 import bgby.skynet.org.uicomponent.base.BaseUiComponent;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 
@@ -45,9 +43,7 @@ public class SixGridLayoutFragment extends BaseUiComponent {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        TextView textView = new TextView(getActivity());
-//        textView.setText(R.string.hello_blank_fragment);
-        Log.i("CREATE FRAGMENT", "Create " + this.getClass().getSimpleName());
+        Log.d("CREATE FRAGMENT", "Create " + this.getClass().getSimpleName());
         Context ctx = container.getContext();
         AveragedGridLayout view = new AveragedGridLayout(ctx);
         int curDirection = getActivity().getRequestedOrientation();
@@ -60,21 +56,19 @@ public class SixGridLayoutFragment extends BaseUiComponent {
         }
 
         // TODO add children later
-//        view.setBackgroundColor(Color.parseColor("#d98989"));
         createChildrenFragements(view, ctx);
-        Log.i("CREATE FRAGMENT", "Finish Create " + this.getClass().getSimpleName());
+        Log.d("CREATE FRAGMENT", "Finish Create " + this.getClass().getSimpleName());
         return view;
     }
 
     private void createChildrenFragements(AveragedGridLayout view, Context ctx) {
-        SixGridLayout layout = (SixGridLayout) getLayoutData();
-        List<ILayout> children = layout.getLayoutContent();
+        List<ILayoutComponent> children = layoutData.getChildren();
         if (children == null || children.isEmpty()){
             return;
         }
         FragmentTransaction tr = getChildFragmentManager().beginTransaction();
         int rotateType = getRotateType();
-        for(int i=0;i<2;i++){
+        for(int i=0;i<children.size();i++){
             ILayoutComponent child = (ILayoutComponent) children.get(i);
             Map<String, Object> layoutParams = child.getParams();
             int atRow = getIntParam(layoutParams, "atRow", 0);
@@ -87,12 +81,6 @@ public class SixGridLayoutFragment extends BaseUiComponent {
             int childHasRow = hasRow;
             switch (rotateType){
                 case LANDSCAPE_RATATE:
-//                    // CA-(R+RS-1)+1
-//                    childAtCol = view.getCols() -(atRow+hasRow-1)+1;
-//                    childAtRow = view.getRows() - atCol + 1;
-//                    childHasCol = hasRow;
-//                    childHasRow = hasCol;
-//                    break;
                 case PORTRAIT_ROTATE:
                     // RA-(C+CS-1)+1
                     childAtCol = view.getCols() - (atRow+hasRow-1) +1 ;
@@ -124,7 +112,7 @@ public class SixGridLayoutFragment extends BaseUiComponent {
     }
 
     private int getRotateType() {
-        SixGridLayout layout = (SixGridLayout) getLayoutData();
+        SixGridLayoutBase layout = (SixGridLayoutBase) getLayoutData();
         int curDirection = getActivity().getRequestedOrientation();
         String setDirectionStr = (String) layout.getParams().get("layoutDirection");
         if (setDirectionStr.equals("landscape")){

@@ -4,24 +4,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import org.skynet.bgby.layout.ILayout;
-
 import java.util.List;
 
-import bgby.skynet.org.smarthomeui.cmptpage.ErrorPageFragment;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.uicomponent.cmptpage.ErrorPageFragment;
 
 /**
  * Created by Clariones on 6/2/2016.
  */
 public class ControlPagerAdapter extends FragmentStatePagerAdapter {
-    private List<ILayout> pages;
+    private List<ILayoutComponent> pages;
     private List<android.app.Fragment> pageUIs;
 
     public ControlPagerAdapter(FragmentManager fm) {
         super(fm);
-        pages = Controllers.getControllerManager().getLayoutPages();
+        pages = Controllers.getControllerManager().getLayoutComponentManager().getRootComponents();
     }
 
     @Override
@@ -45,6 +43,6 @@ public class ControlPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return pages.size() * 2;
+        return pages.size();
     }
 }

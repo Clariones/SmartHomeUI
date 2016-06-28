@@ -1,11 +1,11 @@
 package bgby.skynet.org.uicomponent.normalhvac;
 
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.device.IDevice;
 
 /**
  * Created by Clariones on 6/4/2016.
  */
-public interface INormalHvacDevice extends ILayoutComponent {
+public interface INormalHvacDevice extends IDevice {
 
     boolean isHasHumidity();
 

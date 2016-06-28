@@ -1,4 +1,4 @@
-package bgby.skynet.org.smarthomeui.cmptpage;
+package bgby.skynet.org.uicomponent.cmptpage;
 
 
 import android.os.Bundle;
@@ -8,27 +8,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.skynet.bgby.layout.ILayout;
-
 import java.util.List;
 
 import bgby.skynet.org.smarthomeui.R;
-import bgby.skynet.org.smarthomeui.layoutcomponent.ControlPage;
 import bgby.skynet.org.uicomponent.base.BaseUiComponent;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CmptPageFragment extends BaseUiComponent {
+public class PageFragment extends BaseUiComponent {
+    private static final String TAG = "PageFragment";
     protected View fragmentContent;
 
-    public CmptPageFragment() {
+    public PageFragment() {
         // Required empty public constructor
     }
 
-    public static CmptPageFragment newInstance(String componetID) {
-        CmptPageFragment fragment = new CmptPageFragment();
+    public static PageFragment newInstance(String componetID) {
+        PageFragment fragment = new PageFragment();
         fragment.handleComponentID(componetID);
         return fragment;
     }
@@ -47,14 +45,15 @@ public class CmptPageFragment extends BaseUiComponent {
     }
 
     private Fragment createChildFragements(View view) {
-        List<ILayout> children = ((ControlPage)layoutData).getLayoutContent();
-        if (children == null || children.size() != 1){
+//        List<ILayout> children = ((ControlPage)layoutData).getChildren();
+        List<ILayoutComponent> childrenLayout = layoutData.getChildren();
+        if (childrenLayout == null || childrenLayout.size() != 1){
             ErrorPageFragment errFrgmt = new ErrorPageFragment();
-            errFrgmt.setErrMessage("页面内应该指定一个布局，实际上指定了" + (children==null?0:children.size())+"个");
+            errFrgmt.setErrMessage("页面内应该指定一个布局，实际上指定了" + (childrenLayout==null?0:childrenLayout.size())+"个");
             return errFrgmt;
         }
-        ILayoutComponent compt = (ILayoutComponent) children.get(0);
-        Log.d("CREATE CHILD", String.valueOf(compt));
+        ILayoutComponent compt = childrenLayout.get(0);
+        Log.d(TAG, "Create child " + compt.getComponentId());
 
         Fragment fragment = compt.getFragment();
         return fragment;

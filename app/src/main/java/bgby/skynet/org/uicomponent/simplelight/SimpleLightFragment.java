@@ -13,6 +13,7 @@ import android.widget.Toast;
 import java.util.Map;
 
 import bgby.skynet.org.smarthomeui.R;
+import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.base.BaseUiComponent;
@@ -28,6 +29,7 @@ public class SimpleLightFragment extends BaseUiComponent implements IResponseLis
     private View viewBackground;
     private TextView txtName;
     private ImageView imgModeIcon;
+    private static final String TAG = "SimpleLightFragment";
 
     public static SimpleLightFragment newInstance(String componetID) {
         SimpleLightFragment fragment = new SimpleLightFragment();
@@ -59,7 +61,7 @@ public class SimpleLightFragment extends BaseUiComponent implements IResponseLis
     }
 
     private void updateValues() {
-        ISimpleLightDevice device = (ISimpleLightDevice) this.getLayoutData();
+        ISimpleLightDevice device = getLightDevice();
         boolean isOn = device.getState();
         MaterialsManager mmng = Controllers.getMaterialsManager();
         if (isOn){
@@ -67,6 +69,10 @@ public class SimpleLightFragment extends BaseUiComponent implements IResponseLis
         }else{
             mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, imgModeIcon,MATERIAL_OFF_ICON, MaterialsManager.MATERIAL_ID_SWITCH_OFF);
         }
+    }
+
+    private ISimpleLightDevice getLightDevice() {
+        return (ISimpleLightDevice) layoutData.getDevice();
     }
 
     private void applyMaterials() {
@@ -82,9 +88,24 @@ public class SimpleLightFragment extends BaseUiComponent implements IResponseLis
         mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, viewBackground,MATERIAL_NAME,null);
     }
 
+    @Override
+    public void onDeviceStatusChanged(IDevice layoutComponent) {
+        ISimpleLightDevice device = getLightDevice();
+        if (device != layoutComponent){
+            Log.w(TAG,"Why I got message from other device?");
+            return;
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateValues();
+            }
+        });
+    }
+
     private void toggleLight() {
-        ISimpleLightDevice device = (ISimpleLightDevice) this.getLayoutData();
-        device.toggleState(this);
+        ISimpleLightDevice device = getLightDevice();
+        device.toggleState();
 //        updateValues();
     }
 

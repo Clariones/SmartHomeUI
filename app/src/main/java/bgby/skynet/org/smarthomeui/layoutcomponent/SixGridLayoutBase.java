@@ -3,46 +3,25 @@ package bgby.skynet.org.smarthomeui.layoutcomponent;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import org.skynet.bgby.deviceprofile.DeviceProfile;
-import org.skynet.bgby.layout.ILayout;
-
-import java.util.List;
 import java.util.Map;
 
-import bgby.skynet.org.smarthomeui.cmptlayout.SixGridLayoutFragment;
+import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.uicomponent.sixgridlayout.SixGridLayoutFragment;
 
-public class SixGridLayout extends BaseLayoutGroupComponent {
+public class SixGridLayoutBase extends LayoutComponentBaseImpl {
 
     public static final String TYPE = "sixgridLayout";
     public static final String PORTRAIT = "portrait";
     public static final String LANDSCALE = "landscape";
-    private static final String TAG = "SixGridLayout";
+    private static final String TAG = "SixGridLayoutBase";
     private SixGridLayoutFragment fragment;
 
-    public String getType() {
-        return TYPE;
+    @Override
+    public String verifyParams() {
+        return verifySelfDeviceConfig(getParams());
     }
 
-    @Override
-    protected void preInitChildLayoutData(ILayout child, ILayout data) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void postInitChildLayoutData(ILayout child, ILayout data) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void initByParameters(Map<String, Object> params) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public String verifySelfDeviceConfig(Map<String, DeviceProfile> profiles, Map<String, String> deviceProfileNames) {
+    public String verifySelfDeviceConfig(Map<String, Object> params) {
         if (getParams() == null) {
             return "6分格布局必须指定布局方向参数";
         }
@@ -55,7 +34,6 @@ public class SixGridLayout extends BaseLayoutGroupComponent {
             return "6分格布局布局方向参数layoutDirection必须是" + LANDSCALE + "/" + PORTRAIT;
         }
 
-        List<ILayout> children = getLayoutContent();
         if (children == null || children.isEmpty()) {
             return "布局管理器内必须配置UI子组件";
         }
@@ -67,9 +45,10 @@ public class SixGridLayout extends BaseLayoutGroupComponent {
             maxCols = 2;
         }
 
-        for (ILayout child : children) {
+        for (ILayoutComponent child : children) {
             Map<String, Object> chdParams = child.getParams();
-            String errMsg = "在6分格布局中的子元素" + child.getType() + "必须配置布局参数 atRow 和 atCol";
+            String childDevId = (String) chdParams.get(PARAM_DEVICE_ID);
+            String errMsg = "在6分格布局中的子元素" + childDevId + "必须配置布局参数 atRow 和 atCol";
             if (chdParams == null) {
                 return errMsg;
             }
@@ -80,17 +59,17 @@ public class SixGridLayout extends BaseLayoutGroupComponent {
             }
             Integer hasRows = getIntParam(chdParams, "hasRows", 1);
             Integer hasCols = getIntParam(chdParams, "hasCols", 1);
-            errMsg = chkInRange(1, maxRows, atRow, child.getType() + "参数atRow错误：");
+            errMsg = chkInRange(1, maxRows, atRow, childDevId + "参数atRow错误：");
             if (errMsg != null) return errMsg;
-            errMsg = chkInRange(1, maxCols, atRow, child.getType() + "参数atCol错误：");
+            errMsg = chkInRange(1, maxCols, atRow, childDevId + "参数atCol错误：");
             if (errMsg != null) return errMsg;
-            errMsg = chkInRange(1, maxRows, hasRows, child.getType() + "参数hasRows错误：");
+            errMsg = chkInRange(1, maxRows, hasRows, childDevId + "参数hasRows错误：");
             if (errMsg != null) return errMsg;
-            errMsg = chkInRange(1, maxCols, hasCols, child.getType() + "参数hasCols错误：");
+            errMsg = chkInRange(1, maxCols, hasCols, childDevId + "参数hasCols错误：");
             if (errMsg != null) return errMsg;
-            errMsg = chkInRange(1, maxRows, atRow+hasRows-1, child.getType() + "行数超过边界：");
+            errMsg = chkInRange(1, maxRows, atRow+hasRows-1, childDevId + "行数超过边界：");
             if (errMsg != null) return errMsg;
-            errMsg = chkInRange(1, maxCols, atCol+hasCols-1, child.getType() + "列数超过边界：");
+            errMsg = chkInRange(1, maxCols, atCol+hasCols-1,childDevId + "列数超过边界：");
             if (errMsg != null) return errMsg;
 
         }
@@ -117,7 +96,7 @@ public class SixGridLayout extends BaseLayoutGroupComponent {
 
     @Override
     public Fragment getFragment() {
-        SixGridLayoutFragment fgmt = SixGridLayoutFragment.newInstance(this.getComponentRuntimeID());
+        SixGridLayoutFragment fgmt = SixGridLayoutFragment.newInstance(getComponentId());
         fragment = fgmt;
         return fragment;
     }

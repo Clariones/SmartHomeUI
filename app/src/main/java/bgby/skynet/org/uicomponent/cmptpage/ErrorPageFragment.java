@@ -1,4 +1,4 @@
-package bgby.skynet.org.smarthomeui.cmptpage;
+package bgby.skynet.org.uicomponent.cmptpage;
 
 
 import android.os.Bundle;
