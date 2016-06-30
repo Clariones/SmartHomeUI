@@ -12,12 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import bgby.skynet.org.smarthomeui.device.DeviceException;
-import bgby.skynet.org.smarthomeui.device.DimmerDevice;
-import bgby.skynet.org.smarthomeui.device.IDevice;
-import bgby.skynet.org.smarthomeui.device.NormalHvacDevice;
-import bgby.skynet.org.smarthomeui.device.SwitchLightDevice;
-
 /**
  * Created by Clariones on 6/28/2016.
  */
@@ -34,9 +28,9 @@ public class DeviceManager {
         Iterator<IDevice> it = deviceExamples.iterator();
         while(it.hasNext()){
             IDevice dvcSample = it.next();
-            Set<String> pros = dvcSample.getSupportedProfiles();
+            Set<String> pros = dvcSample.getSupportedStands();
             Set<String> tmpSet = new HashSet<>(pros);
-            tmpSet.retainAll(example.getSupportedProfiles());
+            tmpSet.retainAll(example.getSupportedStands());
             if (tmpSet.isEmpty()){
                 continue;
             }
@@ -60,7 +54,7 @@ public class DeviceManager {
         String profileId = deviceProfile.getID();
         IDevice example = null;
         for(IDevice dvc : deviceExamples){
-            if (dvc.canProfileBe(profileId)){
+            if (dvc.canSupportStandard(deviceProfile.getStandard())){
                 example = dvc;
                 break;
             }

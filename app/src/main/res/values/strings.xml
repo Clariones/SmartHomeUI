@@ -13,4 +13,11 @@
     <string name="common_undefined_device_name">---</string>
     <string name="common_undefined_value">--</string>
     <string name="pref_title_material_folder">素材位置</string>
+    <string name="pref_title_rotate_screen">旋转屏幕</string>
+    <string name="pref_rotate_screen_defval">不旋转</string>
+
+    <string name="direction_landscape">横屏</string>
+    <string name="direction_landscape_reverse">反向横屏</string>
+    <string name="direction_portait">竖屏</string>
+    <string name="direction_portait_reverse">反向竖屏</string>
 </resources>

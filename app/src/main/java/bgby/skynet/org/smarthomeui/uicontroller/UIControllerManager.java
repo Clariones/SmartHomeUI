@@ -12,7 +12,6 @@ import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.driverutils.DriverUtils;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutData;
-import org.skynet.bgby.layout.LayoutUtils;
 import org.skynet.bgby.listeningserver.IUdpMessageHandler;
 import org.skynet.bgby.listeningserver.ListeningServerException;
 import org.skynet.bgby.listeningserver.MessageService;
@@ -26,26 +25,26 @@ import org.skynet.bgby.restserver.IRestClientCallback;
 import org.skynet.bgby.restserver.IRestClientContext;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import bgby.skynet.org.smarthomeui.device.DeviceException;
-import bgby.skynet.org.smarthomeui.device.Hgw2000HBusLight;
-import bgby.skynet.org.smarthomeui.device.Hgw2000HVAC;
-import bgby.skynet.org.smarthomeui.device.Hgw2000SwitchLight;
+import bgby.skynet.org.smarthomeui.device.DeviceManager;
 import bgby.skynet.org.smarthomeui.device.IDevice;
-import bgby.skynet.org.smarthomeui.layoutcomponent.ControlPage;
-import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponentBase;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SimpleLightComponentBase;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayoutBase;
+import bgby.skynet.org.smarthomeui.layoutcomponent.LayoutComponentManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.utils.DisplayNameRepository;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.uicomponent.base.IUiComponent;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
@@ -67,6 +66,11 @@ public class UIControllerManager {
     private boolean starting;
     private LayoutComponentManager layoutComponentManager;
     private DeviceManager deviceManager;
+    protected Map<String, Set<IUiComponent>> deviceUiComponents = new HashMap<>();
+    protected Map<String, String> displayName;
+    protected DisplayNameRepository displayNameRepository;
+    private Map<String, String> displayNameMap;
+    private File internalFileFolder;
 
     public LayoutComponentManager getLayoutComponentManager() {
         return layoutComponentManager;
@@ -92,13 +96,10 @@ public class UIControllerManager {
     public void init(UIControllerConfig config) {
         // TODO update the code when new layout component need to support
         this.startConfig = config;
-        LayoutUtils.registerLayoutType(ControlPage.TYPE, ControlPage.class);
-        LayoutUtils.registerLayoutType(NormalHvacComponentBase.TYPE, NormalHvacComponentBase.class);
-        LayoutUtils.registerLayoutType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
-        LayoutUtils.registerLayoutType(SimpleLightComponentBase.TYPE, SimpleLightComponentBase.class);
-
         layoutComponentManager = new LayoutComponentManager();
         deviceManager = new DeviceManager();
+        displayNameRepository = new DisplayNameRepository();
+        displayNameRepository.setBaseFolder(getInternalFileFolder());
     }
 
     private boolean hasError(UIControllerStatus status) {
@@ -172,12 +173,27 @@ public class UIControllerManager {
     private UIControllerStatus verifyDeviceProfiles() {
         try {
             // first, support which devices
-            deviceManager.addDeviceExample(new Hgw2000SwitchLight());
-            deviceManager.addDeviceExample(new Hgw2000HBusLight());
-            deviceManager.addDeviceExample(new Hgw2000HVAC());
+            deviceManager.initSupportedDevices();
 
             // second, create their instances according to query result
             Map<String, IDevice> allDevices = deviceManager.createFromProfiles(queryProfileResult.getProfiles(), queryProfileResult.getDevices());
+            Map<String, String> names = displayNameRepository.getData();
+            // then override their display name by storage
+            this.displayNameMap = new HashMap<>();
+            for(IDevice device : allDevices.values()){
+                String customName = names.get(device.getDeviceId());
+                if (customName != null){
+                    device.setDisplayName(customName);
+                    displayNameMap.put(device.getDeviceId(), customName);
+                }
+            }
+            // and pages name
+            List<ILayoutComponent> pages = layoutComponentManager.getRootComponents();
+            for(int i=0;i<pages.size();i++){
+                ILayoutComponent page = pages.get(i);
+                String pageId = Controllers.DISPLAY_NAME_PAGE + i;
+                displayNameMap.put(pageId, names.get(pageId));
+            }
 
             // next, link layout components and devices
             Iterator<Map.Entry<String, ILayoutComponent>> it = layoutComponentManager.getAllComponents().entrySet().iterator();
@@ -225,10 +241,7 @@ public class UIControllerManager {
         InputStream ins = null;
         try {
             // first, register which type of layout we can support
-            layoutComponentManager.registerLayoutComponentType(ControlPage.TYPE, ControlPage.class);
-            layoutComponentManager.registerLayoutComponentType(NormalHvacComponentBase.TYPE, NormalHvacComponentBase.class);
-            layoutComponentManager.registerLayoutComponentType(SimpleLightComponentBase.TYPE, SimpleLightComponentBase.class);
-            layoutComponentManager.registerLayoutComponentType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
+            layoutComponentManager.initSupportedLayoutComponents();
 
             // second, create instances from queried result
             ins = new ByteArrayInputStream(queryLayoutResult.getBytes());
@@ -278,7 +291,6 @@ public class UIControllerManager {
         try {
             response = restClient.synchRequest(serverAddress, null, request);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             errorReport(DriverUtils.dumpExceptionToString(e));
             return UIControllerStatus.REQUEST_DEVICE_DATA_FAIL;
@@ -316,7 +328,6 @@ public class UIControllerManager {
         try {
             response = restClient.synchRequest(serverAddress, null, request);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             errorReport(DriverUtils.dumpExceptionToString(e));
             return UIControllerStatus.REQUEST_LAYOUT_FAIL;
@@ -438,6 +449,11 @@ public class UIControllerManager {
 
     }
 
+    public void stop(){
+        if (messageListeningService != null) {
+            messageListeningService.stop();
+        }
+    }
     public void executeCmd(final IRestRequest request, final IRestCommandListener listener) {
         InetSocketAddress serverAddress = getDriverProxyAddress();
         restClient.asynchRequest(serverAddress, null, request, new IRestClientCallback() {
@@ -459,15 +475,31 @@ public class UIControllerManager {
         String command = inputMessage.getCommand();
         switch (command) {
             case UdpMessage.CMD_DEVICE_STATUS_REPORT:
-                Controllers.handleUdpMsgDeviceReport(inputMessage);
+                handleUdpMsgDeviceReport(inputMessage);
                 break;
         }
 
         return null;
     }
 
-    public void registerDeviceRelatedUIComponent(IDevice device, IUiComponent baseUiComponent) {
-        // TODO
+    private void handleUdpMsgDeviceReport(UdpMessage inputMessage) {
+        String devID = inputMessage.getFromDevice();
+        IDevice device = getDeviceManager().getDevice(devID);
+        if (device == null) {
+            return;
+        }
+        device.onStatusReportMessage(inputMessage.getFromApp(), inputMessage.getFromDevice(), inputMessage.getParams());
+    }
+
+    public void registerDeviceRelatedUIComponent(IDevice device, IUiComponent uiComponent) {
+        String devID = device.getDeviceId();
+        Set<IUiComponent> uiCmps = deviceUiComponents.get(devID);
+        if (uiCmps == null) {
+            uiCmps = new HashSet<>();
+            deviceUiComponents.put(devID, uiCmps);
+        }
+        uiCmps.add(uiComponent);
+        Log.i(TAG, "register UI component " + uiComponent + " to " + devID);
     }
 
     public ILayoutComponent getLayoutComponent(String componetID) {
@@ -477,8 +509,52 @@ public class UIControllerManager {
         return layoutComponentManager.getAllComponents().get(componetID);
     }
 
-    public void unRegisterDeviceRelatedUIComponent(IDevice device, IUiComponent baseUiComponent) {
-        // TODO
+    public void unRegisterDeviceRelatedUIComponent(IDevice device, IUiComponent uiComponent) {
+        String devID = device.getDeviceId();
+        Set<IUiComponent> uiCmps = deviceUiComponents.get(devID);
+        if (uiCmps == null) {
+            return;
+        }
+        uiCmps.remove(uiComponent);
+        Log.i(TAG, "remove UI component " + uiComponent + " from " + devID);
+    }
+
+    public Set<IUiComponent> getConnectedUIComponents(IDevice device) {
+        return deviceUiComponents.get(device.getDeviceId());
+    }
+
+    public void updateDeviceName(String deviceID, String devDisplayName) {
+        IDevice device = deviceManager.getDevice(deviceID);
+        if (device  == null ){
+            Log.w(TAG, "Device " + deviceID + " not exist. Do not change its displayName");
+            return;
+        }
+        device.setDisplayName(devDisplayName);
+        saveDeviceName(deviceID, devDisplayName);
+        Set<IUiComponent> uiCmpts = getConnectedUIComponents(device);
+        if (uiCmpts == null){
+            return;
+        }
+        for(IUiComponent cmpt : uiCmpts){
+            cmpt.updateDisplayName(devDisplayName);
+        }
+    }
+
+    public String getDisplayName(String deviceID) {
+        return displayNameMap.get(deviceID);
+    }
+
+    public void saveDeviceName(String key, String name) {
+        displayNameMap.put(key, name);
+        displayNameRepository.save(displayNameMap);
+    }
+
+    public void setInternalFileFolder(File internalFileFolder) {
+        this.internalFileFolder = internalFileFolder;
+    }
+
+    public File getInternalFileFolder() {
+        return internalFileFolder;
     }
 
 

@@ -196,6 +196,7 @@ public class StartPageActivity extends Activity {
             config.setMulticastAddress(InetAddress.getByName(prefs.getString(SettingsFragment.KEY_MULTICAST_ADDRESS, null)));
             config.setMulticastPort(Integer.parseInt(prefs.getString(SettingsFragment.KEY_MULTICAST_PORT, "-1")));
 
+            uiControlManager.setInternalFileFolder(getFilesDir());
             uiControlManager.init(config);
             uiControlManager.setProgressCallback(this.callback);
             Controllers.setControllerManager(uiControlManager);
@@ -296,6 +297,7 @@ public class StartPageActivity extends Activity {
                 Toast.makeText(StartPageActivity.this, getResources().getString(R.string.promptTxtBasicSettings), Toast.LENGTH_SHORT).show();
                 gotoSettingPage();
             } else {
+                Controllers.setScreenDirection(this);
                 startWorking();
             }
             return;

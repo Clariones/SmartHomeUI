@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <bgby.skynet.org.smarthomeui.preference.RotateScreenPreference
+        android:key="pref_key_rotate_screen"
+        android:title="@string/pref_title_rotate_screen"
+        android:defaultValue="@string/pref_rotate_screen_defval"
+        />
     <EditTextPreference
         android:key="pref_key_mine_id"
         android:title="@string/pref_title_mine_id"
@@ -26,4 +31,5 @@
         android:key="pref_key_material_folder"
         android:title="@string/pref_title_material_folder"
         android:defaultValue="smarthome/materials"/>
+
 </PreferenceScreen>

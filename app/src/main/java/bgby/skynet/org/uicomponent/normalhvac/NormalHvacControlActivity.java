@@ -26,6 +26,7 @@ import bgby.skynet.org.customviews.roundseekbar.OnProgressChangedListener;
 import bgby.skynet.org.customviews.roundseekbar.RoundSeekBar;
 import bgby.skynet.org.smarthomeui.R;
 import bgby.skynet.org.smarthomeui.device.IDevice;
+import bgby.skynet.org.smarthomeui.device.INormalHvacDevice;
 import bgby.skynet.org.smarthomeui.uicontroller.UIControllerManager;
 import bgby.skynet.org.smarthomeui.uimaterials.ColorMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
@@ -33,7 +34,7 @@ import bgby.skynet.org.smarthomeui.uimaterials.FontMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.uicomponent.base.IUiComponent;
 
 public class NormalHvacControlActivity extends FragmentActivity implements IUiComponent{
@@ -74,31 +75,31 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // step1: normal initial works for View
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息栏
         Controllers.setScreenDirection(this);
         setContentView(R.layout.cmptactivity_normal_hvac_control);
 
+        // step2: bind activity to correct layoutComponent
         Bundle bundle = this.getIntent().getExtras();
         String layoutId = bundle.getString(NormalHvacFragment.ARG_COMPONENT_ID);
         UIControllerManager uiCtrl = Controllers.getControllerManager();
         ILayoutComponent layout = uiCtrl.getLayoutComponent(layoutId);
         setLayoutData(layout);
+
+        // step3: connect this view to correct device
         String deviceId = layout.getDeviceID();
         Log.i(TAG, "Create with device ID " + deviceId);
         device = (INormalHvacDevice) getDeviceById(deviceId);
         Controllers.getControllerManager().registerDeviceRelatedUIComponent(device, this);
+        device.queryStatus();
 
+        // step4: get handles of any needed UI element
         initMembers();
         applyMaterials();
 
-        sliderSetTemperature.setOnProgressChangedListener(new OnProgressChangedListener() {
-            @Override
-            public void onProgressChanged(RoundSeekBar roundSeekBar, float progress) {
-                onChangeSettingTemperature(progress);
-            }
-        });
 
         updateFanModeIcon();
         updateRunningModeIcon();
@@ -147,6 +148,13 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         sliderSetTemperature.setValueLowLimit(device.getSettingTemperatureLowLimit().floatValue());
         sliderSetTemperature.setValueHighLimit(device.getSettingTemperatureHighLimit().floatValue());
 
+        sliderSetTemperature.setOnProgressChangedListener(new OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(RoundSeekBar roundSeekBar, float progress) {
+                onChangeSettingTemperature(progress);
+            }
+        });
+
         if (device.getRoomTemperature() != null) {
             barRoomTemperature.setProgress(device.getRoomTemperature().floatValue());
             txtRoomTemperature.setText(formatToString(device.getRoomTemperature().floatValue()));
@@ -186,6 +194,12 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
             }
         });
 
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     protected void applyMaterials() {
@@ -313,7 +327,6 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
 
     protected void onRunningModeChanged(String runningMode, int which) {
         device.setRunningMode(runningMode);
-        updateRunningModeIcon();
     }
 
     protected void updateRunningModeIcon() {
@@ -326,7 +339,6 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
 
     protected void onFanModeChanged(String fanMode, int which) {
         device.setFanMode(fanMode);
-        updateFanModeIcon();
     }
 
     protected void updateFanModeIcon() {
@@ -381,6 +393,11 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
                 updateStatus();
             }
         });
+    }
+
+    @Override
+    public void updateDisplayName(String displayName) {
+        txtDisplayName.setText(displayName);
     }
 
     private void updateStatus() {

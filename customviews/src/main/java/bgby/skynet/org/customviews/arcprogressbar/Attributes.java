@@ -24,6 +24,15 @@ public class Attributes {
     private float minValue = 0.0f;
     private float maxValue = 100.0f;
     private float cavityRatio;
+    private float barWidth =  10.0f;
+
+    public float getBarWidth() {
+        return barWidth;
+    }
+
+    public void setBarWidth(float barWidth) {
+        this.barWidth = barWidth;
+    }
 
     public void loadFromTypedArray(TypedArray t) {
         diameter = t.getDimension(R.styleable.ArcProgressBar_diameter, diameter);
@@ -34,6 +43,8 @@ public class Attributes {
         hasTickMark = t.getBoolean(R.styleable.ArcProgressBar_hasTickMark, hasTickMark);
         tickMarkLineLength = t.getDimension(R.styleable.ArcProgressBar_tickMarkLineLength, tickMarkLineLength);
         tickMarkTextSize = t.getDimension(R.styleable.ArcProgressBar_tickMarkTextSize, tickMarkTextSize);
+        barWidth = t.getDimension(R.styleable.ArcProgressBar_progressBarWidth, barWidth);
+
         tickMarkColor = t.getColor(R.styleable.ArcProgressBar_tickMarkColor, tickMarkColor);
         progressBarBackgroundColor = t.getColor(R.styleable.ArcProgressBar_progressBarBackgroundColor, progressBarBackgroundColor);
         progressBarLowColor = t.getColor(R.styleable.ArcProgressBar_progressBarLowColor, progressBarLowColor);

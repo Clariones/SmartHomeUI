@@ -24,6 +24,7 @@
         <attr name="progressBarLowColor" format="color"></attr>
         <attr name="progressBarMiddleColor" format="color"></attr>
         <attr name="progressBarHighColor" format="color"></attr>
+        <attr name="progressBarWidth" format="dimension"></attr>
         <attr name="minValue"></attr>
         <attr name="maxValue"></attr>
         <attr name="cavityRatio"></attr>

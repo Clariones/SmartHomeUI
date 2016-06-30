@@ -5,7 +5,6 @@ import android.util.Log;
 
 import java.util.Map;
 
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 import bgby.skynet.org.uicomponent.sixgridlayout.SixGridLayoutFragment;
 
 public class SixGridLayoutBase extends LayoutComponentBaseImpl {

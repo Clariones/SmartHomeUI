@@ -1,7 +1,5 @@
 package bgby.skynet.org.smarthomeui.device;
 
-import bgby.skynet.org.smarthomeui.device.IDevice;
-
 /**
  * Created by Clariones on 6/16/2016.
  */

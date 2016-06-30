@@ -17,7 +17,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets { main { res.srcDirs = ['src/main/res', 'src/custom/uidata'] } }
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res', 'src/custom/uidata']
+            java.srcDirs = ['src/main/java', 'src/main/java/interfaces']
+        }
+    }
 }
 
 dependencies {

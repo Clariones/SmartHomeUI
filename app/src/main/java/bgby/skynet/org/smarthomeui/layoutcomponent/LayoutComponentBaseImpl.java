@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import bgby.skynet.org.smarthomeui.device.IDevice;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
 
 /**
  * Created by Clariones on 6/28/2016.
@@ -16,8 +16,17 @@ public abstract class LayoutComponentBaseImpl implements ILayoutComponent {
     protected IDevice device;
     protected List<ILayoutComponent> children;
     protected String displayName;
+    protected int position;
 
+    @Override
+    public int getPosition() {
+        return position;
+    }
 
+    @Override
+    public void setPosition(int pos) {
+        this.position = pos;
+    }
 
     @Override
     public String getDeviceID() {
@@ -29,10 +38,18 @@ public abstract class LayoutComponentBaseImpl implements ILayoutComponent {
 
     @Override
     public String getDisplayName() {
+        String disName = null;
         if (device != null){
-            return device.getDisplayName();
+            disName = device.getDisplayName();
         }
-        return displayName;
+        if (disName == null || disName.isEmpty()){
+            disName = Controllers.getControllerManager().getDisplayName(getDeviceID());
+        }
+        if (disName == null || disName.isEmpty()){
+            return displayName;
+        }else{
+            return disName;
+        }
     }
 
     public Map<String, Object> getParams() {

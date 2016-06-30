@@ -5,8 +5,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
-import org.skynet.bgby.protocol.UdpMessage;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import bgby.skynet.org.smarthomeui.uicontroller.UIControllerManager;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.uicomponent.base.IUiComponent;
 
 /**
@@ -24,6 +23,7 @@ import bgby.skynet.org.uicomponent.base.IUiComponent;
  */
 public class Controllers {
     public static final String PREFERENCE_KEY_DIRECTION = "pref_key_screen_direction";
+    public static final String DISPLAY_NAME_PAGE = "_page_";
     private static final String TAG = "Controllers";
     protected static Map<String, Set<IUiComponent>> deviceUiComponents = new HashMap<>();
     private static AtomicLong gComponentID = new AtomicLong(1);
@@ -31,6 +31,7 @@ public class Controllers {
     private static Map<String, ILayoutComponent> componentsById = new HashMap<>();
     private static UIControllerManager controllerManager;
     private static MaterialsManager materialsManager;
+    protected static Activity curActivity;
 
     private Controllers() {
     }
@@ -84,52 +85,49 @@ public class Controllers {
         Controllers.materialsManager = materialsManager;
     }
 
-//    public static String regsiterComponent(ILayoutComponent component) {
-//        String id = getUniquedComponentID(component.getType());
-//        components.put(id, component);
-//        if (component.getDeviceID() != null) {
-//            componentsById.put(component.getDeviceID(), component);
-//        }
-//        return id;
-//    }
-
-    public static void setScreenDirection(Activity page) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(page);
+    public static void setScreenDirection(Activity activity) {
+        curActivity = activity;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         int direction = prefs.getInt(PREFERENCE_KEY_DIRECTION, -1);
         if (direction == -1) {
             prefs.edit().putInt(PREFERENCE_KEY_DIRECTION, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE).apply();
-            page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             return;
         }
 
 
-        int curRequestDirection = page.getRequestedOrientation();
+        int curRequestDirection = activity.getRequestedOrientation();
         if (direction != curRequestDirection) {
             switch (direction) {
                 case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-                    page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     break;
                 case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
-                    page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                     break;
                 case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
-                    page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
                     break;
                 default:
-                    page.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     break;
             }
         }
     }
 
-    public static void handleUdpMsgDeviceReport(UdpMessage msg) {
-        String devID = msg.getFromDevice();
-        ILayoutComponent device = getComponentByDeviceID(devID);
-        if (device == null) {
+
+    public static void showError(final String title, final String description) {
+        Log.e(TAG, title +" : " + description);
+        if (curActivity == null){
             return;
         }
-        Set<IUiComponent> uiComponents = deviceUiComponents.get(device.getDeviceID());
-//        device.onStatusChanged(msg.getFromApp(), msg.getParams(), uiComponents);
 
+        curActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast t = Toast.makeText(curActivity, "错误：" + title + "\r\n" + description, Toast.LENGTH_SHORT);
+                t.show();
+            }
+        });
     }
 }

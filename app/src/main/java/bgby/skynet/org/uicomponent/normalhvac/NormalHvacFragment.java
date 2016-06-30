@@ -2,6 +2,7 @@ package bgby.skynet.org.uicomponent.normalhvac;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -11,7 +12,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import bgby.skynet.org.smarthomeui.R;
+import bgby.skynet.org.smarthomeui.device.IDevice;
+import bgby.skynet.org.smarthomeui.device.INormalHvacDevice;
+import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
+import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
+import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.base.BaseUiComponent;
 
 public class NormalHvacFragment extends BaseUiComponent {
@@ -19,7 +29,7 @@ public class NormalHvacFragment extends BaseUiComponent {
     protected static final String MATERIAL_MODE_ICON = "normalHVAC/summary/1x1/runningMode/";
     protected static final String MATERIAL_TEMPERATURE = "normalHVAC/summary/1x1/roomTemperature";
     protected static final String MATERIAL_NAME = "normalHVAC/summary/1x1/displayName";
-
+    private static final String TAG = "NormalHvacFragment";
 
 
     protected View viewBackground;
@@ -34,6 +44,8 @@ public class NormalHvacFragment extends BaseUiComponent {
 
     protected static String defaultName = "OK";
     protected static String defaultTemperature = "90";
+    private Map<String, Drawable> modeIcons;
+
     public NormalHvacFragment() {
 
     }
@@ -57,6 +69,7 @@ public class NormalHvacFragment extends BaseUiComponent {
         imgModeIcon = (ImageView) view.findViewById(R.id.cmpt_normalhvac_mode_icon);
         
         applyMaterials();
+        attachDisplayNameView(txtName);
         updateValues();
         Log.d("CREATE FRAGMENT", "Finish Create " + this.getClass().getSimpleName());
 
@@ -66,7 +79,12 @@ public class NormalHvacFragment extends BaseUiComponent {
                 openControlPage();
             }
         });
+        getHvacDevice().queryStatus();
         return view;
+    }
+
+    private INormalHvacDevice getHvacDevice() {
+        return (INormalHvacDevice) layoutData.getDevice();
     }
 
     private void openControlPage() {
@@ -77,10 +95,10 @@ public class NormalHvacFragment extends BaseUiComponent {
     }
 
     private void updateValues() {
-        INormalHvacDevice device = (INormalHvacDevice) layoutData.getDevice();
+        INormalHvacDevice device = getHvacDevice();
         currentMode = device.getRunningMode();
         currentTemperature= device.getRoomTemperature();
-        displayName = device.getDeviceDisplayName();
+        displayName = device.getDisplayName();
 
         updateDisplayMode();
         updateDisplayTemperature();
@@ -110,11 +128,13 @@ public class NormalHvacFragment extends BaseUiComponent {
             return;
         }
         String meaterialName = MATERIAL_MODE_ICON + currentMode;
-        if (meaterialName.equals(imgModeIconMaterial)){
-            return;
-        }
-        imgModeIconMaterial = meaterialName; // if mode not changed, then don't draw
-        applyImageDrable(imgModeIcon, meaterialName);
+        Drawable icon = modeIcons.get(meaterialName);
+        imgModeIcon.setImageDrawable(icon);
+//        if (meaterialName.equals(imgModeIconMaterial)){
+//            return;
+//        }
+//        imgModeIconMaterial = meaterialName; // if mode not changed, then don't draw
+//        applyImageDrable(imgModeIcon, meaterialName);
     }
 
     protected void applyMaterials() {
@@ -128,6 +148,33 @@ public class NormalHvacFragment extends BaseUiComponent {
         applyImageDrable((ImageView) viewBackground, materialBkg);
         applyFont(txtTemperature, MATERIAL_TEMPERATURE);
         applyFont(txtName, MATERIAL_NAME);
+
+        INormalHvacDevice device = getHvacDevice();
+        String[] modes = device.getRunningModes();
+        Map<String, Drawable> icons = new HashMap<>();
+        MaterialsManager mmng = Controllers.getMaterialsManager();
+        for(int i = 0; i< modes.length; i++){
+            String mId = MATERIAL_MODE_ICON + modes[i];
+            IMaterial material = mmng.getMaterial(mId);
+            if (material instanceof DrawableMaterail){
+                icons.put(mId, ((DrawableMaterail) material).getDrawable());
+            }else{
+                icons.put(mId, ((DrawableMaterail)mmng.getMaterial(NormalHvacControlActivity.defMaterialIds[i])).getDrawable());
+            }
+        }
+        this.modeIcons = icons;
     }
 
+    @Override
+    public void onDeviceStatusChanged(IDevice device) {
+        if (device != layoutData.getDevice()){
+            Log.w(TAG, "Got status update from other device " + device.getDeviceId());
+        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateValues();
+            }
+        });
+    }
 }

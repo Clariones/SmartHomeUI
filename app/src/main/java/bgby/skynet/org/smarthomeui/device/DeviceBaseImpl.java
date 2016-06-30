@@ -1,30 +1,45 @@
 package bgby.skynet.org.smarthomeui.device;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+
 import org.skynet.bgby.deviceprofile.DeviceProfile;
+import org.skynet.bgby.devicestandard.DeviceStandardBaseImpl;
+import org.skynet.bgby.driverutils.DriverUtils;
+import org.skynet.bgby.protocol.IHttpResponse;
+import org.skynet.bgby.protocol.IRestRequest;
+import org.skynet.bgby.protocol.RestRequestImpl;
+import org.skynet.bgby.protocol.RestResponseImpl;
 import org.skynet.bgby.protocol.UdpMessage;
+import org.skynet.bgby.restserver.IRestClientContext;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import bgby.skynet.org.smarthomeui.uicontroller.Helper;
+import bgby.skynet.org.smarthomeui.uicontroller.IRestCommandListener;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.base.IUiComponent;
+import fi.iki.elonen.NanoHTTPD;
 
 /**
  * Created by Clariones on 6/28/2016.
  */
-public class DeviceBaseImpl implements IDevice {
-    private static final int FIELD_DEVICE_STATUES_PREFIX_LEGNTH = 12;
-    protected Set<String> supportedProfiles;
+public abstract class DeviceBaseImpl implements IDevice {
+    protected static final int FIELD_DEVICE_STATUES_PREFIX_LEGNTH = 12;
+    protected Set<String> supportedStands;
 
     protected String deviceId;
     protected String profileId;
     protected String displayName;
+    protected boolean canDoQuery;
 
     public DeviceBaseImpl() {
-        supportedProfiles = new HashSet<>();
+        supportedStands = new HashSet<>();
     }
 
     @Override
@@ -37,9 +52,8 @@ public class DeviceBaseImpl implements IDevice {
         this.deviceId = deviceId;
     }
 
-    @Override
-    public Set<String> getSupportedProfiles() {
-        return supportedProfiles;
+    public Set<String> getSupportedStands() {
+        return supportedStands;
     }
 
     @Override
@@ -54,6 +68,9 @@ public class DeviceBaseImpl implements IDevice {
 
     @Override
     public String getDisplayName() {
+        if (displayName == null){
+            return getDeviceId();
+        }
         return displayName;
     }
 
@@ -62,48 +79,24 @@ public class DeviceBaseImpl implements IDevice {
         this.displayName = displayName;
     }
 
-    protected void supportProfile(String profile) {
-        if (profile == null || profile.isEmpty()) {
+    protected DeviceProfile getProfile(){
+        return Controllers.getControllerManager().getDeviceProfile(getDeviceId());
+    }
+    protected void supportStandard(String standard) {
+        if (standard == null || standard.isEmpty()) {
             return;
         }
-        String profileName = profile.trim().toLowerCase();
-        supportedProfiles.add(profileName);
+        String standardName = standard.trim().toLowerCase();
+        supportedStands.add(standardName);
     }
 
     @Override
-    public boolean canProfileBe(String profile) {
-        if (supportedProfiles == null || supportedProfiles.isEmpty()) {
+    public boolean canSupportStandard(String standard) {
+        if (supportedStands == null || supportedStands.isEmpty()) {
             return false;
         }
-        String profileName = profile.trim().toLowerCase();
-        return supportedProfiles.contains(profileName);
-    }
-
-    @Override
-    public void onStatusChanged(String fromApp, Map<String, String> params, Set<IUiComponent> uiComponents) {
-        Map<String, String> statusParams = new HashMap<>();
-        for (Map.Entry<String, String> ent : params.entrySet()) {
-            String msgKeyName = ent.getKey();
-            if (msgKeyName.startsWith(UdpMessage.FIELD_DEVICE_STATUES_PREFIX)) {
-                statusParams.put(ent.getKey().substring(FIELD_DEVICE_STATUES_PREFIX_LEGNTH), ent.getValue());
-            } else {
-                statusParams.put(ent.getKey(), ent.getValue());
-            }
-        }
-        onDeviceReportMessage(fromApp, statusParams);
-        if (uiComponents == null) {
-            return;
-        }
-        Iterator<IUiComponent> it = uiComponents.iterator();
-        while (it.hasNext()) {
-            IUiComponent uiCmp = it.next();
-            uiCmp.onDeviceStatusChanged(this);
-        }
-    }
-
-    protected void onDeviceReportMessage(String fromApp, Map<String, String> statusParams) {
-        // sub class must implements this
-        throw new UnsupportedOperationException("Any devic must implement onDeviceReportMessage");
+        String standardName = standard.trim().toLowerCase();
+        return supportedStands.contains(standardName);
     }
 
     protected Boolean getParamBoolean(Map<String, Object> params, String key, Boolean defaultVal) {
@@ -111,18 +104,11 @@ public class DeviceBaseImpl implements IDevice {
         if (value == null) {
             return defaultVal;
         }
-        if (value instanceof Boolean) {
-            return (Boolean) value;
+        if (defaultVal != null) {
+            return DriverUtils.getAsBoolean(value, defaultVal);
+        }else{
+            return DriverUtils.getAsBoolean(value, false);
         }
-        if (value instanceof String) {
-            String strValue = ((String) value).trim().toLowerCase();
-            if (strValue.equals("true") || strValue.equals("yes")) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return defaultVal;
     }
 
     protected Double[] getParamDoubleRange(Map<String, Object> params, String key, Double[] defVal) {
@@ -172,4 +158,100 @@ public class DeviceBaseImpl implements IDevice {
         // by default, profile not needed for simple device
         // Complex device such as HVAC should implement this
     }
+
+    @Override
+    public void onStatusReportMessage(String fromApp, String fromDevice, Map<String, String> params) {
+        Map<String, String> statusParams = new HashMap<>();
+        for (Map.Entry<String, String> ent : params.entrySet()) {
+            String msgKeyName = ent.getKey();
+            if (msgKeyName.startsWith(UdpMessage.FIELD_DEVICE_STATUES_PREFIX)) {
+                statusParams.put(ent.getKey().substring(FIELD_DEVICE_STATUES_PREFIX_LEGNTH), ent.getValue());
+            } else {
+                statusParams.put(ent.getKey(), ent.getValue());
+            }
+        }
+        handleStatusReport(statusParams);
+        refreshConnectedUIComponents();
+    }
+
+    @Override
+    public void refreshConnectedUIComponents() {
+        Set<IUiComponent> uiCmpts = Controllers.getControllerManager().getConnectedUIComponents(this);
+        if (uiCmpts == null){
+            return;
+        }
+        for(IUiComponent cmpt : uiCmpts){
+            cmpt.onDeviceStatusChanged(this);
+        }
+    }
+
+    @Override
+    public boolean queryStatus() {
+        if (isCanDoQuery()){
+            exeCmd(DeviceStandardBaseImpl.CMD_GET_ALL);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isCanDoQuery() {
+        return canDoQuery;
+    }
+
+    public void setCanDoQuery(boolean canDoQuery) {
+        this.canDoQuery = canDoQuery;
+    }
+
+    protected abstract void handleStatusReport(Map<String, String> params);
+
+    protected void exeCmd(String command, String... params) {
+        Map<String, String> reqParams = new HashMap<>();
+        if (params != null && params.length > 0) {
+            int len = params.length;
+            if (len % 2 != 0) {
+                throw new RuntimeException("exeCmd() params must be repeated \"key,value\",");
+            }
+            for (int i = 0; i < len; i += 2) {
+                reqParams.put(params[i], params[i + 1]);
+            }
+        }
+        exeCmd(command, reqParams);
+    }
+    protected void exeCmd(String command, Map<String, String > reqParams) {
+        final IRestRequest request = new RestRequestImpl();
+        request.setCommand(command);
+        request.setParams(reqParams);
+        request.setTarget(getDeviceId());
+        Controllers.getControllerManager().executeCmd(request, new IRestCommandListener(){
+            @Override
+            public void handleResponse(IRestRequest request, IRestClientContext restClientContext, IHttpResponse httpResponse) {
+                NanoHTTPD.Response.IStatus statues = httpResponse.getStatus();
+                Helper.RestResponseData response;
+                Gson gson = new Gson();
+                if (statues.equals(NanoHTTPD.Response.Status.OK)) {
+                    String jsonStr = httpResponse.getAsString();
+                    Log.d("TAG", "Get response " + jsonStr);
+                    response = gson.fromJson(jsonStr, Helper.RestResponseData.class);
+                    RestResponseImpl restResponse = new RestResponseImpl();
+                    if (response.getErrorCode() == 0){
+                        Map<String, Object> result = gson.fromJson(response.getData(), Map.class);
+                        onCommandResponse(request, response, result);
+                    }else{
+                        onCommandResponse(request, response, null);
+                    }
+                    return;
+                }
+                onCommandErrorResponse(request, httpResponse);
+            }
+        });
+    }
+
+    protected void onCommandErrorResponse(IRestRequest request, IHttpResponse httpResponse) {
+        NanoHTTPD.Response.IStatus resStatus = httpResponse.getStatus();
+        StringBuilder errSb = new StringBuilder();
+        errSb.append(resStatus.getDescription()+" when " + request.getCommand() +" for " + request.getTarget());
+        Controllers.showError("命令失败", errSb.toString());
+    }
+
+    protected abstract void onCommandResponse(IRestRequest request, Helper.RestResponseData response, Map<String, Object> result);
 }

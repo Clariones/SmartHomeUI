@@ -24,7 +24,6 @@ import bgby.skynet.org.customviews.circlecentrelayout.ICentredView;
  */
 public class ArcProgressBar extends View implements ICentredView {
     public static final float TEMPLATE_DIAMTER = 10000.0f;
-    public static final int BAR_WIDTH = 10;
     protected static final String TAG = "ArcProgressBar";
     protected static final float FACTOR_TEXT_TO_LENGTH = 2.8f;
     protected double layoutDiameter = 0;
@@ -200,10 +199,10 @@ public class ArcProgressBar extends View implements ICentredView {
         // calculate the tickmark delta-area
         Utils.DrawAreaData deltaArea = null;
         if (attributes.isHasTickMark() == true) {
-            deltaArea = Utils.calculateDeltaAreaWithTickMark(BAR_WIDTH, template, attributes.getDegree(),
+            deltaArea = Utils.calculateDeltaAreaWithTickMark((int) attributes.getBarWidth(), template, attributes.getDegree(),
                     attributes.getTickMarkLineLength(), attributes.getTickMarkTextSize());
         } else {
-            deltaArea = Utils.calculateDeltaAreaWithoutTickMark(BAR_WIDTH, template, attributes.getDegree());
+            deltaArea = Utils.calculateDeltaAreaWithoutTickMark((int) attributes.getBarWidth(), template, attributes.getDegree());
         }
 
         // calculate 3 possible draw area
@@ -323,7 +322,7 @@ public class ArcProgressBar extends View implements ICentredView {
         Paint paint1 = new Paint();
         paint1.setColor(attributes.getProgressBarBackgroundColor()); //设置圆环的颜色
         paint1.setStyle(Paint.Style.STROKE); //设置空心
-        paint1.setStrokeWidth(BAR_WIDTH); //设置圆环的宽度
+        paint1.setStrokeWidth(attributes.getBarWidth()); //设置圆环的宽度
         paint1.setAntiAlias(true);  //消除锯齿
         paint1.setStrokeCap(Paint.Cap.ROUND);
 
@@ -335,7 +334,7 @@ public class ArcProgressBar extends View implements ICentredView {
         SweepGradient shader = Utils.getGradient(attributes, getCircleCentrePoint().x, getCircleCentrePoint().y);
         Paint paint2 = new Paint();
         paint2.setStyle(Paint.Style.STROKE); //设置空心
-        paint2.setStrokeWidth(BAR_WIDTH); //设置圆环的宽度
+        paint2.setStrokeWidth(attributes.getBarWidth()); //设置圆环的宽度
         paint2.setAntiAlias(true);  //消除锯齿
         paint2.setStrokeCap(Paint.Cap.ROUND);
         paint2.setShader(shader);
@@ -379,7 +378,7 @@ public class ArcProgressBar extends View implements ICentredView {
             double startVal = attributes.getMinValue();
             double factor = 1.0 * attributes.getDegree() / (attributes.getMaxValue() - attributes.getMinValue());
             int spX0 = getCircleCentrePoint().x;
-            int spY0 = (int) (getCircleCentrePoint().y - renderDiameter / 2 - BAR_WIDTH / 2);
+            int spY0 = (int) (getCircleCentrePoint().y - renderDiameter / 2 - attributes.getBarWidth() / 2);
             int spY1 = (int) (spY0 - attributes.getTickMarkLineLength() * 0.5);
             int spY2 = (int) (spY0 - attributes.getTickMarkLineLength());
             int spY3 = (int) (spY0 - attributes.getTickMarkLineLength() - 5);
@@ -412,7 +411,7 @@ public class ArcProgressBar extends View implements ICentredView {
         Paint paint1 = new Paint();
         paint1.setColor(attributes.getProgressBarBackgroundColor()); //设置圆环的颜色
         paint1.setStyle(Paint.Style.STROKE);
-        paint1.setStrokeWidth(BAR_WIDTH);
+        paint1.setStrokeWidth(attributes.getBarWidth());
         paint1.setAntiAlias(true);
         paint1.setStrokeCap(Paint.Cap.ROUND);
         canvas.drawArc(rectF, 0, attributes.getDegree(), false, paint1);

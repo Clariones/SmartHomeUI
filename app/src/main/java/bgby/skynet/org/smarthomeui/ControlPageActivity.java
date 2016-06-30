@@ -1,28 +1,29 @@
 package bgby.skynet.org.smarthomeui;
 
-import android.content.SharedPreferences;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.text.Editable;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.skynet.bgby.driverutils.DriverUtils;
-import org.skynet.bgby.layout.ILayout;
 
 import java.util.List;
 
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.smarthomeui.utils.Logger4Andriod;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 
 public class ControlPageActivity extends FragmentActivity {
     public static final String MATERIAL_ID_LAND_BACKGROUND = "app/homepage/landscape/background";
@@ -36,6 +37,7 @@ public class ControlPageActivity extends FragmentActivity {
     public static final String MATERIAL_ID_PORT_LOGO = "app/homepage/portrait/statusbar/logo";
     public static final String MATERIAL_ID_PORT_NAME = "app/homepage/portrait/statusbar/name";
     public static final String MATERIAL_ID_PORT_MENU = "app/homepage/portrait/statusbar/menu";
+    private static final int REQUEST_CODE_BASIC_SETTING = 10001;
 
     protected ViewPager viewPager;
     protected ImageView imgLogoIcon;
@@ -43,6 +45,8 @@ public class ControlPageActivity extends FragmentActivity {
     protected ImageButton btnMenu;
     protected View layoutStatusBar;
     protected View wholeView;
+    private int curPageNo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,30 +67,10 @@ public class ControlPageActivity extends FragmentActivity {
         applyMaterials();
 
 
-        // TODO just for test
-//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int curDirection = getRequestedOrientation();
-                switch (curDirection){
-                    case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                        saveDirection(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                        break;
-                    case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-                        saveDirection(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-                        break;
-                    case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                        saveDirection(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                        break;
-                    default:
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                        saveDirection(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                }
-
+                openSettingPage();
             }
         });
         ControlPagerAdapter mPagerAdapter = new ControlPagerAdapter(getSupportFragmentManager());
@@ -94,7 +78,6 @@ public class ControlPageActivity extends FragmentActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.i("Scroll Page",String.format("p=%d,off=%f,pix=%d", position, positionOffset, positionOffsetPixels));
             }
 
             @Override
@@ -104,26 +87,106 @@ public class ControlPageActivity extends FragmentActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
+            }
+        });
+        setPageName(0);
+
+        txtPageName.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showNameDialog();
+                return true;
+            }
+        });
+    }
+
+    protected void showNameDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("页面名称"); //设置对话框标题
+        builder.setIcon(android.R.drawable.btn_star); //设置对话框标题前的图标
+        final EditText edit = new EditText(this);
+        edit.setText(getCurrentPageName());
+        builder.setView(edit);
+        builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Editable txt = edit.getText();
+                String newName = edit.getText().toString();
+                onDisplayNameDialogClosed(newName);
+            }
+        });
+
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
 
             }
         });
-//        setPageName(0);
-
+        builder.setCancelable(true); //设置按钮是否可以按返回键取消,false则不可以取消
+        AlertDialog dialog = builder.create(); //创建对话框
+        dialog.setCanceledOnTouchOutside(true); //设置弹出框失去焦点是否隐藏,即点击屏蔽其它地方是否隐藏
+        dialog.show();
     }
 
-    private void saveDirection(int direction) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putInt(Controllers.PREFERENCE_KEY_DIRECTION, direction).apply();
+    protected void onDisplayNameDialogClosed(String newName) {
+        if (newName == null){
+            Controllers.showError("无效的名字", "页面的名字不能为空");
+            return;
+        }
+        if (newName.isEmpty()){
+            Controllers.showError("无效的名字", "页面的名字不能为空");
+            return;
+        }
+        Controllers.getControllerManager().saveDeviceName(Controllers.DISPLAY_NAME_PAGE +curPageNo, newName);
+        txtPageName.setText(newName);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Controllers.getControllerManager().stop();
+    }
+
+    private String getCurrentPageName() {
+        String id = Controllers.DISPLAY_NAME_PAGE + curPageNo;
+        String pageName = Controllers.getControllerManager().getDisplayName(id);
+        if (pageName == null){
+            pageName = "第"+(curPageNo+1)+"页";
+        }
+        return pageName;
+    }
+
+    private void openSettingPage() {
+        Intent intent = new Intent();
+        intent.setClassName(this, SettingsActivity.class.getName());
+        startActivityForResult(intent, REQUEST_CODE_BASIC_SETTING);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case REQUEST_CODE_BASIC_SETTING:
+                afterSettingChanged();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void afterSettingChanged() {
+        Controllers.setScreenDirection(this);
+        Controllers.showError("配置改变", "你应该重启本应用");
     }
 
     private void setPageName(int position) {
-        List<ILayout> pages = Controllers.getControllerManager().getLayoutPages();
+        this.curPageNo = position;
+
+        List<ILayoutComponent> pages = Controllers.getControllerManager().getLayoutComponentManager().getRootComponents();
         if (pages == null || pages.size() <= position){
             txtPageName.setText("");
-        }else{
-            ILayoutComponent compt = (ILayoutComponent) pages.get(position);
-            txtPageName.setText(compt.getDisplayName());
+            return;
         }
+        String pageName = getCurrentPageName();
+        txtPageName.setText(pageName);
+
     }
 
     private void applyMaterials(){

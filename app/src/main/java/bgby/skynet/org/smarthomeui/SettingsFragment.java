@@ -6,11 +6,15 @@ import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 
+import bgby.skynet.org.smarthomeui.preference.RotateScreenPreference;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
+
 
 /**
  */
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     protected static final String KEY_MULTICAST_ADDRESS = "pref_key_multicast_address";
+    protected static final String KEY_ROTATE_SCREEN = "pref_key_rotate_screen";
     protected static final String KEY_MULTICAST_PORT = "pref_key_multicast_port";
     protected static final String KEY_PROXY_ADDRESS = "pref_key_driverproxy_address";
     protected static final String KEY_PROXY_PORT = "pref_key_driverproxy_port";
@@ -53,11 +57,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.i("OK", "onSharedPreferenceChanged: key="+key+", value="+sharedPreferences.getString(key, null));
-        if (key.equals(KEY_MULTICAST_ADDRESS)){
-            EditTextPreference pref = (EditTextPreference) findPreference(key);
-            pref.setSummary(sharedPreferences.getString(key, null));
+        if (key.equals(KEY_ROTATE_SCREEN) || key.equals(Controllers.PREFERENCE_KEY_DIRECTION)){
+            RotateScreenPreference pref = (RotateScreenPreference) findPreference(key);
+//            pref.setSummary("AHA");
         }else{
+            Log.i("OK", "onSharedPreferenceChanged: key="+key+", value="+sharedPreferences.getString(key, null));
             EditTextPreference pref = (EditTextPreference) findPreference(key);
             pref.setSummary(sharedPreferences.getString(key, null));
         }

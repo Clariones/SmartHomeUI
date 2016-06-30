@@ -14,12 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import bgby.skynet.org.smarthomeui.layoutcomponent.ControlPage;
-import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponent;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SimpleLightComponent;
-import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayoutBase;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
-
 /**
  * Created by Clariones on 6/28/2016.
  */

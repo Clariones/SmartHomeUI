@@ -9,7 +9,6 @@ import java.util.Map;
 
 import bgby.skynet.org.smarthomeui.uicontroller.Helper;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
-import bgby.skynet.org.uicomponent.simplelight.ISimpleLightDevice;
 
 /**
  * Created by Clariones on 6/28/2016.
@@ -28,7 +27,7 @@ public class SwitchLightDevice extends DeviceBaseImpl implements ISimpleLightDev
 
     public SwitchLightDevice() {
         super();
-        supportProfile("Honeywell Switch Light");
+        supportStandard(SimpleLight.ID);
     }
 
     @Override

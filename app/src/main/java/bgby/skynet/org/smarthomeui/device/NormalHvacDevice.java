@@ -8,7 +8,6 @@ import java.util.Map;
 
 import bgby.skynet.org.smarthomeui.uicontroller.Helper;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
-import bgby.skynet.org.uicomponent.normalhvac.INormalHvacDevice;
 
 /**
  * Created by Clariones on 6/28/2016.
@@ -35,7 +34,7 @@ public class NormalHvacDevice extends DeviceBaseImpl implements INormalHvacDevic
     protected String deviceDisplayName;
     public NormalHvacDevice() {
         super();
-        supportProfile("Honeywell HDW 2000 HVAC");
+        supportStandard(NormalHVAC.ID);
     }
 
     public void initWithProfile(DeviceProfile profile) throws DeviceException {

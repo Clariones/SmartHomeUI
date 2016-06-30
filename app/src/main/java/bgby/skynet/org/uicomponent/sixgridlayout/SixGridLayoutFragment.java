@@ -18,7 +18,7 @@ import java.util.Map;
 import bgby.skynet.org.customviews.averagedgridlayout.AveragedGridLayout;
 import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayoutBase;
 import bgby.skynet.org.uicomponent.base.BaseUiComponent;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 
 /**
  * A simple {@link Fragment} subclass.

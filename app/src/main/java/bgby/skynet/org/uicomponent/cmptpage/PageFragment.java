@@ -11,8 +11,9 @@ import android.view.ViewGroup;
 import java.util.List;
 
 import bgby.skynet.org.smarthomeui.R;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.base.BaseUiComponent;
-import bgby.skynet.org.uicomponent.base.ILayoutComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,5 +59,17 @@ public class PageFragment extends BaseUiComponent {
         Fragment fragment = compt.getFragment();
         return fragment;
     }
+
+    @Override
+    public String getDisplayName() {
+        String name = Controllers.getControllerManager().getDisplayName("_page_"+layoutData.getPosition());
+        if (name == null){
+            return "第"+layoutData.getDeviceID()+"页";
+        }else{
+            return name;
+        }
+    }
+
+
 
 }

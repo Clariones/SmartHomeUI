@@ -12,11 +12,11 @@ import bgby.skynet.org.smarthomeui.utils.Controllers;
 /**
  * Created by Clariones on 6/28/2016.
  */
-public class DimmerDevice extends SwitchLight {
+public class DimmerDevice extends SwitchLightDevice {
     public DimmerDevice() {
         super();
-        supportedProfiles.clear();
-        supportProfile("Honeywell HBus Light");
+        supportedStands.clear();
+        supportStandard(SimpleDimmer.ID);
     }
 
     protected int level;
