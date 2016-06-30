@@ -1,4 +1,4 @@
-package bgby.skynet.org.smarthomeui.uicontroller;
+package bgby.skynet.org.smarthomeui.layoutcomponent;
 
 import android.util.Log;
 
@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import bgby.skynet.org.smarthomeui.layoutcomponent.ControlPage;
+import bgby.skynet.org.smarthomeui.layoutcomponent.NormalHvacComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.SimpleLightComponent;
+import bgby.skynet.org.smarthomeui.layoutcomponent.SixGridLayoutBase;
 import bgby.skynet.org.uicomponent.base.ILayoutComponent;
 
 /**
@@ -25,16 +29,15 @@ public class LayoutComponentManager {
     protected static AtomicLong compIdSeed = new AtomicLong(1);
     protected static Map<String, Class<? extends ILayoutComponent>> registedTypes = new HashMap<>();
     protected List<ILayoutComponent> rootComponents;
+    protected Map<String, ILayoutComponent> allComponents;
 
     public Map<String, ILayoutComponent> getAllComponents() {
         return allComponents;
     }
 
-    protected Map<String, ILayoutComponent> allComponents;
-
     public void registerLayoutComponentType(String type, Class<? extends ILayoutComponent> clazz) throws LayoutException {
         Class<? extends ILayoutComponent> oldData = registedTypes.put(type, clazz);
-        if (oldData != null){
+        if (oldData != null) {
             throw new LayoutException("Layout type " + type + " was double-registered. Must fix!");
         }
     }
@@ -43,16 +46,18 @@ public class LayoutComponentManager {
         return rootComponents;
     }
 
-    public Map<String,ILayoutComponent> createComponentsFromLayoutData(LayoutData[] datas) throws LayoutException {
-        Map<String,ILayoutComponent> result = new HashMap<>();
-        if (datas == null || datas.length == 0){
+    public Map<String, ILayoutComponent> createComponentsFromLayoutData(LayoutData[] datas) throws LayoutException {
+        rootComponents = new ArrayList<>(datas.length);
+        Map<String, ILayoutComponent> result = new HashMap<>();
+        if (datas == null || datas.length == 0) {
             Log.w(TAG, "layout data is empty. No any layout component was created!");
             return result;
         }
 
-        rootComponents = new ArrayList<>(datas.length);
-        for(LayoutData data: datas){
+        for (int i = 0; i < datas.length; i++) {
+            LayoutData data = datas[i];
             ILayoutComponent cmpt = createOneLayoutComponent(data, result);
+            cmpt.setPosition(i + 1);
             rootComponents.add(cmpt);
         }
         allComponents = result;
@@ -67,10 +72,12 @@ public class LayoutComponentManager {
         component.setParams(data.getParams());
         result.put(componentID, component);
         List<LayoutData> children = data.getLayoutContent();
-        if (children != null && children.size()>0){
+        if (children != null && children.size() > 0) {
             List<ILayoutComponent> childrenCmpts = new ArrayList<>(children.size());
-            for(LayoutData childData : children){
+            for (int i = 0; i < children.size(); i++) {
+                LayoutData childData = children.get(i);
                 ILayoutComponent child = createOneLayoutComponent(childData, result);
+                child.setPosition(i + 1);
                 childrenCmpts.add(child);
             }
             component.setChildren(childrenCmpts);
@@ -85,17 +92,17 @@ public class LayoutComponentManager {
 
     protected ILayoutComponent createComponentByType(String type) throws LayoutException {
         Class<? extends ILayoutComponent> clazz = registedTypes.get(type);
-        if (clazz == null){
+        if (clazz == null) {
             try {
                 Class tryClazz = Class.forName(type);
-                if (ILayoutComponent.class.isAssignableFrom(tryClazz)){
+                if (ILayoutComponent.class.isAssignableFrom(tryClazz)) {
                     clazz = tryClazz;
-                }else{
-                    throw new LayoutException("Type " + type +" is not an ILayoutComponent sub-class name");
+                } else {
+                    throw new LayoutException("Type " + type + " is not an ILayoutComponent sub-class name");
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-                throw new LayoutException("Type " + type +" is not registered and is not an valid class name itself neither.");
+                throw new LayoutException("Type " + type + " is not registered and is not an valid class name itself neither.");
             }
         }
         try {
@@ -104,5 +111,12 @@ public class LayoutComponentManager {
             e.printStackTrace();
             throw new LayoutException("Cannot create instance of class " + clazz, e);
         }
+    }
+
+    public void initSupportedLayoutComponents() throws LayoutException {
+        registerLayoutComponentType(ControlPage.TYPE, ControlPage.class);
+        registerLayoutComponentType(NormalHvacComponent.TYPE, NormalHvacComponent.class);
+        registerLayoutComponentType(SimpleLightComponent.TYPE, SimpleLightComponent.class);
+        registerLayoutComponentType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
     }
 }

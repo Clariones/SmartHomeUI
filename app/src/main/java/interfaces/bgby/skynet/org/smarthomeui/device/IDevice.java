@@ -5,8 +5,6 @@ import org.skynet.bgby.deviceprofile.DeviceProfile;
 import java.util.Map;
 import java.util.Set;
 
-import bgby.skynet.org.uicomponent.base.IUiComponent;
-
 /**
  * Created by Clariones on 6/28/2016.
  */
@@ -15,7 +13,7 @@ public interface IDevice {
 
     void setDeviceId(String deviceId);
 
-    Set<String> getSupportedProfiles();
+    Set<String> getSupportedStands();
 
     String getProfileId();
 
@@ -25,9 +23,15 @@ public interface IDevice {
 
     void setDisplayName(String displayName);
 
-    boolean canProfileBe(String profileName);
-
-    void onStatusChanged(String fromApp, Map<String, String> params, Set<IUiComponent> uiComponents);
+    boolean canSupportStandard(String profileName);
 
     void initWithProfile(DeviceProfile deviceProfile) throws DeviceException;
+
+    void onStatusReportMessage(String fromApp, String fromDevice, Map<String, String> params);
+
+    void refreshConnectedUIComponents();
+
+    boolean isCanDoQuery();
+
+    boolean queryStatus();
 }

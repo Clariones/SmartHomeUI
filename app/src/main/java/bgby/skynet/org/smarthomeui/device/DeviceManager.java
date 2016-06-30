@@ -1,4 +1,4 @@
-package bgby.skynet.org.smarthomeui.uicontroller;
+package bgby.skynet.org.smarthomeui.device;
 
 import android.util.Log;
 
@@ -13,7 +13,10 @@ import java.util.Map;
 import java.util.Set;
 
 import bgby.skynet.org.smarthomeui.device.DeviceException;
+import bgby.skynet.org.smarthomeui.device.DimmerDevice;
 import bgby.skynet.org.smarthomeui.device.IDevice;
+import bgby.skynet.org.smarthomeui.device.NormalHvacDevice;
+import bgby.skynet.org.smarthomeui.device.SwitchLightDevice;
 
 /**
  * Created by Clariones on 6/28/2016.
@@ -79,5 +82,11 @@ public class DeviceManager {
 
     public IDevice getDevice(String id){
         return allDevices.get(id);
+    }
+
+    public void initSupportedDevices() throws DeviceException {
+        addDeviceExample(new SwitchLightDevice());
+        addDeviceExample(new DimmerDevice());
+        addDeviceExample(new NormalHvacDevice());
     }
 }

@@ -1,4 +1,4 @@
-package bgby.skynet.org.uicomponent.base;
+package bgby.skynet.org.smarthomeui.layoutcomponent;
 
 import android.support.v4.app.Fragment;
 
@@ -12,6 +12,9 @@ import bgby.skynet.org.smarthomeui.device.IDevice;
  */
 public interface ILayoutComponent {
     public static final String PARAM_DEVICE_ID = "deviceID";
+
+    int getPosition();
+    void setPosition(int pos);
 
     String getDeviceID();
 

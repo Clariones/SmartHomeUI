@@ -2,15 +2,18 @@ package bgby.skynet.org.smarthomeui.device;
 
 import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.devicestandard.NormalHVAC;
+import org.skynet.bgby.protocol.IRestRequest;
 
 import java.util.Map;
 
+import bgby.skynet.org.smarthomeui.uicontroller.Helper;
+import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.uicomponent.normalhvac.INormalHvacDevice;
 
 /**
  * Created by Clariones on 6/28/2016.
  */
-public class Hgw2000HVAC extends DeviceBaseImpl implements INormalHvacDevice {
+public class NormalHvacDevice extends DeviceBaseImpl implements INormalHvacDevice {
     /**
      * Profile related members
      */
@@ -30,7 +33,7 @@ public class Hgw2000HVAC extends DeviceBaseImpl implements INormalHvacDevice {
     protected Double roomHumidity;
     protected String fanMode;
     protected String deviceDisplayName;
-    public Hgw2000HVAC() {
+    public NormalHvacDevice() {
         super();
         supportProfile("Honeywell HDW 2000 HVAC");
     }
@@ -46,10 +49,104 @@ public class Hgw2000HVAC extends DeviceBaseImpl implements INormalHvacDevice {
         settingTemperatureHighLimit = range[1];
         runningModes = getParamStringArray(specParams, NormalHVAC.TERM_RUNNING_MODES, null);
         fanSpeeds = getParamStringArray(specParams, NormalHVAC.TERM_FAN_MODES, null);
-
+        canDoQuery = getParamBoolean(specParams, NormalHVAC.TERM_CAN_QUERY, true);
         String errMsg = this.verifySelfDeviceConfig(profile.getSpec());
         if (errMsg != null){
             throw new DeviceException(errMsg);
+        }
+    }
+
+    protected void updateFromParams(Map<String, ? extends Object> newParams) throws DeviceException{
+        Object val = null;
+        String key = NormalHVAC.TERM_ROOM_TEMPERATURE;
+        val = newParams.get(key);
+        if (val != null){
+            roomTemperature = asDouble(val);
+        }
+
+        key = NormalHVAC.TERM_SET_TEMPERATURE;
+        val = newParams.get(key);
+        if (val != null){
+            temperatureSetting = asDouble(val);
+        }
+
+        key = NormalHVAC.TERM_ROOM_HUMIDITY;
+        val = newParams.get(key);
+        if (val != null){
+            roomHumidity = asDouble(val);
+        }
+
+        key = NormalHVAC.TERM_RUNNING_MODE;
+        val = newParams.get(key);
+        if (val != null){
+            String newMode = String.valueOf(val);
+            if (!isInRange(newMode, runningModes)){
+                throw new DeviceException("设备返回无法识别的运行模式" + newMode);
+            }
+            runningMode = newMode;
+        }
+
+        key = NormalHVAC.TERM_FAN_MODE;
+        val = newParams.get(key);
+        if (val != null){
+            String newMode = String.valueOf(val);
+            if (!isInRange(newMode, fanSpeeds)){
+                throw new DeviceException("设备返回无法识别的风扇模式" + newMode);
+            }
+            fanMode = newMode;
+        }
+    }
+
+    private boolean isInRange(String val, String[] vals) {
+        if (vals == null || vals.length < 1){
+            return false;
+        }
+
+        for(String vv : vals){
+            if (vv.equals(val)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Double asDouble(Object val) throws DeviceException {
+        try {
+            if (val instanceof  Number){
+                return ((Number) val).doubleValue();
+            }
+            return Double.parseDouble((String) val);
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new DeviceException("设备返回无效的数值 " + val, e);
+        }
+    }
+
+    @Override
+    protected void handleStatusReport(Map<String, String> params) {
+        try {
+            updateFromParams(params);
+        } catch (DeviceException e) {
+            e.printStackTrace();
+            Controllers.showError("收到无效消息", e.getMessage());
+        }
+    }
+
+    @Override
+    protected void onCommandResponse(IRestRequest request, Helper.RestResponseData response, Map<String, Object> result) {
+        if (response.getErrorCode() != 0) {
+            if (response.getErrorCode() == 20006){
+                new Throwable("???").printStackTrace();
+            }
+            Controllers.showError("命令执行错误", response.getErrorCode()+":"+getDeviceId()+response.getResult());
+            return;
+        }
+        try {
+            updateFromParams(result);
+            refreshConnectedUIComponents();
+        } catch (DeviceException e) {
+            e.printStackTrace();
+            Controllers.showError("设备返回无效消息", e.getMessage());
         }
     }
 
@@ -131,6 +228,7 @@ public class Hgw2000HVAC extends DeviceBaseImpl implements INormalHvacDevice {
     @Override
     public void setRunningMode(String runningMode) {
         this.runningMode = runningMode;
+        exeCmd(NormalHVAC.CMD_SET_RUNNING_MODE, NormalHVAC.TERM_RUNNING_MODE, String.valueOf(runningMode));
     }
 
     @Override
@@ -151,6 +249,8 @@ public class Hgw2000HVAC extends DeviceBaseImpl implements INormalHvacDevice {
     @Override
     public void setTemperatureSetting(Double temperatureSetting) {
         this.temperatureSetting = temperatureSetting;
+        exeCmd(NormalHVAC.CMD_SET_TEMPERATURE, NormalHVAC.TERM_SET_TEMPERATURE, String.valueOf(temperatureSetting));
+
     }
 
     @Override
@@ -171,16 +271,7 @@ public class Hgw2000HVAC extends DeviceBaseImpl implements INormalHvacDevice {
     @Override
     public void setFanMode(String fanMode) {
         this.fanMode = fanMode;
-    }
-
-    @Override
-    public String getDeviceDisplayName() {
-        return deviceDisplayName;
-    }
-
-    @Override
-    public void setDeviceDisplayName(String deviceDisplayName) {
-        this.deviceDisplayName = deviceDisplayName;
+        exeCmd(NormalHVAC.CMD_SET_FAN_MODE, NormalHVAC.TERM_FAN_MODE, String.valueOf(fanMode));
     }
 
     public String verifySelfDeviceConfig(Map<String, Object> params) {

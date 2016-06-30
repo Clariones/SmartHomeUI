@@ -1,4 +1,4 @@
-package bgby.skynet.org.uicomponent.normalhvac;
+package bgby.skynet.org.smarthomeui.device;
 
 import bgby.skynet.org.smarthomeui.device.IDevice;
 
@@ -55,7 +55,4 @@ public interface INormalHvacDevice extends IDevice {
 
     void setFanMode(String fanMode);
 
-    String getDeviceDisplayName();
-
-    void setDeviceDisplayName(String deviceDisplayName);
 }

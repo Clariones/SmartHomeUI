@@ -7,12 +7,12 @@ import bgby.skynet.org.uicomponent.simplelight.SimpleLightFragment;
 /**
  * Created by Clariones on 6/14/2016.
  */
-public class SimpleLightComponentBase extends LayoutComponentBaseImpl {
+public class SimpleLightComponent extends LayoutComponentBaseImpl {
 //    public static final String TERM_CAN_TOGGLE = "canDoToggle";
 //    public static final String TERM_CAN_QUERY = "canQueryStatus";
 
     public static final String TYPE = "simpleLight";
-    private static final String TAG = "SimpleLightComponentBase";
+    private static final String TAG = "SimpleLightComponent";
 //    protected boolean canDoToggle;
 //    protected boolean canQueryStatus;
 

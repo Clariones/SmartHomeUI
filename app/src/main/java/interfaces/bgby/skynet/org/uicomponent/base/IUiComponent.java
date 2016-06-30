@@ -1,6 +1,7 @@
 package bgby.skynet.org.uicomponent.base;
 
 import bgby.skynet.org.smarthomeui.device.IDevice;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 
 /**
  * Created by Clariones on 6/3/2016.
@@ -12,5 +13,7 @@ public interface IUiComponent {
 
     String getDisplayName();
 
-    void onDeviceStatusChanged(IDevice layoutComponent);
+    void onDeviceStatusChanged(IDevice device);
+
+    void updateDisplayName(String displayName);
 }

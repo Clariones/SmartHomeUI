@@ -1,4 +1,4 @@
-package bgby.skynet.org.uicomponent.simplelight;
+package bgby.skynet.org.smarthomeui.device;
 
 import bgby.skynet.org.smarthomeui.device.IDevice;
 
@@ -12,4 +12,5 @@ public interface ISimpleLightDevice extends IDevice {
     void setState(boolean newState);
 
     void toggleState();
+
 }
