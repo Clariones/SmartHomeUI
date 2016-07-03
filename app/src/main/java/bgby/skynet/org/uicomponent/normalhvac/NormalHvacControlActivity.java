@@ -27,6 +27,7 @@ import bgby.skynet.org.customviews.roundseekbar.RoundSeekBar;
 import bgby.skynet.org.smarthomeui.R;
 import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.smarthomeui.device.INormalHvacDevice;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.smarthomeui.uicontroller.UIControllerManager;
 import bgby.skynet.org.smarthomeui.uimaterials.ColorMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
@@ -34,7 +35,6 @@ import bgby.skynet.org.smarthomeui.uimaterials.FontMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
-import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.uicomponent.base.IUiComponent;
 
 public class NormalHvacControlActivity extends FragmentActivity implements IUiComponent{
@@ -147,13 +147,13 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         sliderSetTemperature.setMaxValue((float) maxValue);
         sliderSetTemperature.setValueLowLimit(device.getSettingTemperatureLowLimit().floatValue());
         sliderSetTemperature.setValueHighLimit(device.getSettingTemperatureHighLimit().floatValue());
-
-        sliderSetTemperature.setOnProgressChangedListener(new OnProgressChangedListener() {
-            @Override
-            public void onProgressChanged(RoundSeekBar roundSeekBar, float progress) {
-                onChangeSettingTemperature(progress);
-            }
-        });
+        sliderSetTemperature.setOnProgressChangedListener(new TemperatureSettingListener());
+//        sliderSetTemperature.setOnProgressChangedListener(new OnProgressChangedListener() {
+//            @Override
+//            public void onProgressChanged(RoundSeekBar roundSeekBar, float progress) {
+//                onChangeSettingTemperature(progress);
+//            }
+//        });
 
         if (device.getRoomTemperature() != null) {
             barRoomTemperature.setProgress(device.getRoomTemperature().floatValue());
@@ -508,6 +508,25 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
 
         @Override
         public void onCancel(DialogInterface dialog, String selected, int which) {
+        }
+    }
+
+    private class TemperatureSettingListener implements OnProgressChangedListener {
+        protected float curProgress;
+        @Override
+        public void onProgressChanged(RoundSeekBar roundSeekBar, float progress) {
+            curProgress = progress;
+            txtSetTemperature.setText(formatToString(progress));
+            barSetTemperature.setProgress(progress);
+        }
+
+        @Override
+        public void onStartTrackingTouch(RoundSeekBar roundSeekBar) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(RoundSeekBar roundSeekBar) {
+            onChangeSettingTemperature(curProgress);
         }
     }
 }

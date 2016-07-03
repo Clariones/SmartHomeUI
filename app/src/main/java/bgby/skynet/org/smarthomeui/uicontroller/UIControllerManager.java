@@ -12,6 +12,7 @@ import org.skynet.bgby.deviceprofile.DeviceProfile;
 import org.skynet.bgby.driverutils.DriverUtils;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutData;
+import org.skynet.bgby.layout.LayoutException;
 import org.skynet.bgby.listeningserver.IUdpMessageHandler;
 import org.skynet.bgby.listeningserver.ListeningServerException;
 import org.skynet.bgby.listeningserver.MessageService;
@@ -208,6 +209,11 @@ public class UIControllerManager {
                 cmpt.setDevice(allDevices.get(devId));
             }
         } catch (DeviceException e) {
+            e.printStackTrace();
+            String errSb = DriverUtils.dumpExceptionToString(e);
+            errorReport(errSb.toString());
+            return UIControllerStatus.INVALID_DEVICE_DATA;
+        } catch (LayoutException e) {
             e.printStackTrace();
             String errSb = DriverUtils.dumpExceptionToString(e);
             errorReport(errSb.toString());

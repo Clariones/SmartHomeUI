@@ -6,11 +6,9 @@ import org.skynet.bgby.deviceprofile.DeviceProfile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Clariones on 6/28/2016.
@@ -28,13 +26,11 @@ public class DeviceManager {
         Iterator<IDevice> it = deviceExamples.iterator();
         while(it.hasNext()){
             IDevice dvcSample = it.next();
-            Set<String> pros = dvcSample.getSupportedStands();
-            Set<String> tmpSet = new HashSet<>(pros);
-            tmpSet.retainAll(example.getSupportedStands());
-            if (tmpSet.isEmpty()){
-                continue;
+            String pros = dvcSample.getSupportStandard();
+            String newStandard = example.getSupportStandard();
+            if (pros.equals(newStandard)) {
+                throw new DeviceException("Both " + dvcSample.getClass().getSimpleName() + " and " + example.getClass().getSimpleName() + " support standard " + newStandard);
             }
-            throw new DeviceException("Both " + dvcSample.getClass().getSimpleName() +" and " + example.getClass().getSimpleName() + " support profile " + tmpSet);
         }
         deviceExamples.add(example);
     }
@@ -67,6 +63,7 @@ public class DeviceManager {
             device.setProfileId(profileId);
             device.setDeviceId(devId);
             device.initWithProfile(deviceProfile);
+            Log.i(TAG, "Create device " + device.getClass().getSimpleName() + " " + devId);
             return device;
         } catch (Exception e) {
             e.printStackTrace();

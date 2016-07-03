@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.util.Map;
 
+import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.uicomponent.sixgridlayout.SixGridLayoutFragment;
 
 public class SixGridLayoutBase extends LayoutComponentBaseImpl {
@@ -14,6 +15,11 @@ public class SixGridLayoutBase extends LayoutComponentBaseImpl {
     public static final String LANDSCALE = "landscape";
     private static final String TAG = "SixGridLayoutBase";
     private SixGridLayoutFragment fragment;
+
+    @Override
+    protected boolean validDevice(IDevice device) {
+        return true;
+    }
 
     @Override
     public String verifyParams() {

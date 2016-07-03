@@ -112,5 +112,6 @@ public class LayoutComponentManager {
         registerLayoutComponentType(NormalHvacComponent.TYPE, NormalHvacComponent.class);
         registerLayoutComponentType(SimpleLightComponent.TYPE, SimpleLightComponent.class);
         registerLayoutComponentType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
+        registerLayoutComponentType(SimpleDimmerComponent.TYPE, SimpleDimmerComponent.class);
     }
 }

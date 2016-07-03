@@ -12,10 +12,9 @@ import bgby.skynet.org.smarthomeui.utils.Controllers;
 /**
  * Created by Clariones on 6/28/2016.
  */
-public class DimmerDevice extends SwitchLightDevice {
+public class DimmerDevice extends SwitchLightDevice implements ISimpleDimmerDevice{
     public DimmerDevice() {
         super();
-        supportedStands.clear();
         supportStandard(SimpleDimmer.ID);
     }
 
@@ -32,6 +31,7 @@ public class DimmerDevice extends SwitchLightDevice {
         }else{
             state = false;
         }
+        exeCmd(SimpleDimmer.CMD_SET_LIGHT, SimpleDimmer.TERM_DIMMER_LEVEL, String.valueOf(level));
     }
 
     @Override

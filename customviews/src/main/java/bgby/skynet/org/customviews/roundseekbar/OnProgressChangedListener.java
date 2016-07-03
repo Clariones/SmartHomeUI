@@ -5,4 +5,8 @@ package bgby.skynet.org.customviews.roundseekbar;
  */
 public interface OnProgressChangedListener {
     void onProgressChanged(RoundSeekBar roundSeekBar, float progress);
+
+    void onStartTrackingTouch(RoundSeekBar roundSeekBar);
+
+    void onStopTrackingTouch(RoundSeekBar roundSeekBar);
 }

@@ -3,6 +3,7 @@ package bgby.skynet.org.smarthomeui.layoutcomponent;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.uicomponent.cmptpage.PageFragment;
 
 public class ControlPage extends LayoutComponentBaseImpl {
@@ -17,4 +18,8 @@ public class ControlPage extends LayoutComponentBaseImpl {
 	}
 
 
+	@Override
+	protected boolean validDevice(IDevice device) {
+		return true;
+	}
 }

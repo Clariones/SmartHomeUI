@@ -13,7 +13,7 @@ public interface IDevice {
 
     void setDeviceId(String deviceId);
 
-    Set<String> getSupportedStands();
+    String getSupportStandard();
 
     String getProfileId();
 

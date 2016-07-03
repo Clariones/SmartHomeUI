@@ -51,8 +51,13 @@ public class MaterialsManager {
     public static final String MATERIAL_ID_DEF_OTHER = "app/default/system/other";
     public static final String MATERIAL_ID_LIGHT_ON = "app/default/system/lighton";
     public static final String MATERIAL_ID_LIGH_OFF = "app/default/system/lightoff";
+    public static final String MATERIAL_ID_CONTROL_ON = "app/default/system/controlon";
+    public static final String MATERIAL_ID_CONTROL_OFF = "app/default/system/controloff";
+    public static final String MATERIAL_ID_FLOOR_HEATING_ON = "app/default/system/floorheatingon";
+    public static final String MATERIAL_ID_FLOOR_HEATING_OFF = "app/default/system/floorheatingoff";
     public static final String MATERIAL_ID_SWITCH_ON = "app/default/system/switchon";
     public static final String MATERIAL_ID_SWITCH_OFF = "app/default/system/switchoff";
+    public static final String MATERIAL_ID_SWITCH_PARTIAL = "app/default/system/switchpartial";
     public static final String MATERIAL_ID_CURTAIN_OPEN = "app/default/system/curtainopen";
     public static final String MATERIAL_ID_CURTAIN_CLOSE = "app/default/system/curtainclose";
     public static final String MATERIAL_ID_TEMPERATURE = "app/default/system/temperature";

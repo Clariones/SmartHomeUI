@@ -20,7 +20,7 @@ android {
     sourceSets {
         main {
             res.srcDirs = ['src/main/res', 'src/custom/uidata']
-            java.srcDirs = ['src/main/java', 'src/main/java/interfaces']
+            java.srcDirs = ['src/main/java', 'src/main/interfaces']
         }
     }
 }

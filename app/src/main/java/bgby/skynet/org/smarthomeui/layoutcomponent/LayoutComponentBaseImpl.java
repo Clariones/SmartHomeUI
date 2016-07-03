@@ -1,5 +1,7 @@
 package bgby.skynet.org.smarthomeui.layoutcomponent;
 
+import org.skynet.bgby.layout.LayoutException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -75,9 +77,15 @@ public abstract class LayoutComponentBaseImpl implements ILayoutComponent {
     }
 
     @Override
-    public void setDevice(IDevice device) {
+    public void setDevice(IDevice device) throws LayoutException{
+        if (!validDevice(device)){
+            throw new LayoutException(this.getClass().getSimpleName() +" cannot related to a " + device.getSupportStandard() + " device");
+        }
         this.device = device;
     }
+
+    protected abstract boolean validDevice(IDevice device);
+
 
     @Override
     public List<ILayoutComponent> getChildren() {

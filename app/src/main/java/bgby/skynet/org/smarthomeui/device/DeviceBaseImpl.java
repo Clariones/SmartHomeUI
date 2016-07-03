@@ -15,7 +15,6 @@ import org.skynet.bgby.protocol.UdpMessage;
 import org.skynet.bgby.restserver.IRestClientContext;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +30,7 @@ import fi.iki.elonen.NanoHTTPD;
  */
 public abstract class DeviceBaseImpl implements IDevice {
     protected static final int FIELD_DEVICE_STATUES_PREFIX_LEGNTH = 12;
-    protected Set<String> supportedStands;
+    protected String supportStandard;
 
     protected String deviceId;
     protected String profileId;
@@ -39,7 +38,7 @@ public abstract class DeviceBaseImpl implements IDevice {
     protected boolean canDoQuery;
 
     public DeviceBaseImpl() {
-        supportedStands = new HashSet<>();
+
     }
 
     @Override
@@ -52,8 +51,8 @@ public abstract class DeviceBaseImpl implements IDevice {
         this.deviceId = deviceId;
     }
 
-    public Set<String> getSupportedStands() {
-        return supportedStands;
+    public String getSupportStandard() {
+        return supportStandard;
     }
 
     @Override
@@ -68,7 +67,7 @@ public abstract class DeviceBaseImpl implements IDevice {
 
     @Override
     public String getDisplayName() {
-        if (displayName == null){
+        if (displayName == null) {
             return getDeviceId();
         }
         return displayName;
@@ -79,24 +78,25 @@ public abstract class DeviceBaseImpl implements IDevice {
         this.displayName = displayName;
     }
 
-    protected DeviceProfile getProfile(){
+    protected DeviceProfile getProfile() {
         return Controllers.getControllerManager().getDeviceProfile(getDeviceId());
     }
+
     protected void supportStandard(String standard) {
         if (standard == null || standard.isEmpty()) {
             return;
         }
         String standardName = standard.trim().toLowerCase();
-        supportedStands.add(standardName);
+        supportStandard = standardName;
     }
 
     @Override
-    public boolean canSupportStandard(String standard) {
-        if (supportedStands == null || supportedStands.isEmpty()) {
+    public boolean canSupportStandard(String standards) {
+        if (supportStandard == null || supportStandard.isEmpty()) {
             return false;
         }
-        String standardName = standard.trim().toLowerCase();
-        return supportedStands.contains(standardName);
+        String canonicalStdName = standards.trim().toLowerCase();
+        return (canonicalStdName.equals(supportStandard));
     }
 
     protected Boolean getParamBoolean(Map<String, Object> params, String key, Boolean defaultVal) {
@@ -106,7 +106,7 @@ public abstract class DeviceBaseImpl implements IDevice {
         }
         if (defaultVal != null) {
             return DriverUtils.getAsBoolean(value, defaultVal);
-        }else{
+        } else {
             return DriverUtils.getAsBoolean(value, false);
         }
     }
@@ -177,17 +177,17 @@ public abstract class DeviceBaseImpl implements IDevice {
     @Override
     public void refreshConnectedUIComponents() {
         Set<IUiComponent> uiCmpts = Controllers.getControllerManager().getConnectedUIComponents(this);
-        if (uiCmpts == null){
+        if (uiCmpts == null) {
             return;
         }
-        for(IUiComponent cmpt : uiCmpts){
+        for (IUiComponent cmpt : uiCmpts) {
             cmpt.onDeviceStatusChanged(this);
         }
     }
 
     @Override
     public boolean queryStatus() {
-        if (isCanDoQuery()){
+        if (isCanDoQuery()) {
             exeCmd(DeviceStandardBaseImpl.CMD_GET_ALL);
             return true;
         }
@@ -217,12 +217,13 @@ public abstract class DeviceBaseImpl implements IDevice {
         }
         exeCmd(command, reqParams);
     }
-    protected void exeCmd(String command, Map<String, String > reqParams) {
+
+    protected void exeCmd(String command, Map<String, String> reqParams) {
         final IRestRequest request = new RestRequestImpl();
         request.setCommand(command);
         request.setParams(reqParams);
         request.setTarget(getDeviceId());
-        Controllers.getControllerManager().executeCmd(request, new IRestCommandListener(){
+        Controllers.getControllerManager().executeCmd(request, new IRestCommandListener() {
             @Override
             public void handleResponse(IRestRequest request, IRestClientContext restClientContext, IHttpResponse httpResponse) {
                 NanoHTTPD.Response.IStatus statues = httpResponse.getStatus();
@@ -233,10 +234,10 @@ public abstract class DeviceBaseImpl implements IDevice {
                     Log.d("TAG", "Get response " + jsonStr);
                     response = gson.fromJson(jsonStr, Helper.RestResponseData.class);
                     RestResponseImpl restResponse = new RestResponseImpl();
-                    if (response.getErrorCode() == 0){
+                    if (response.getErrorCode() == 0) {
                         Map<String, Object> result = gson.fromJson(response.getData(), Map.class);
                         onCommandResponse(request, response, result);
-                    }else{
+                    } else {
                         onCommandResponse(request, response, null);
                     }
                     return;
@@ -249,7 +250,7 @@ public abstract class DeviceBaseImpl implements IDevice {
     protected void onCommandErrorResponse(IRestRequest request, IHttpResponse httpResponse) {
         NanoHTTPD.Response.IStatus resStatus = httpResponse.getStatus();
         StringBuilder errSb = new StringBuilder();
-        errSb.append(resStatus.getDescription()+" when " + request.getCommand() +" for " + request.getTarget());
+        errSb.append(resStatus.getDescription() + " when " + request.getCommand() + " for " + request.getTarget());
         Controllers.showError("命令失败", errSb.toString());
     }
 

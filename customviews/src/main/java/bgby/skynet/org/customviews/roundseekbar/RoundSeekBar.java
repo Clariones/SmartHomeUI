@@ -202,6 +202,9 @@ public class RoundSeekBar extends View implements ICentredView {
             case MotionEvent.ACTION_DOWN:
 //                Log.i(TAG, "DOWN EVENT");
 //                Utils.handleActionDown(config, event);
+                if (listener != null) {
+                    listener.onStartTrackingTouch(this);
+                }
                 return true;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "MOVE EVENT");
@@ -221,6 +224,9 @@ public class RoundSeekBar extends View implements ICentredView {
                 }
                 return true;
             default:
+                if (listener != null) {
+                    listener.onStopTrackingTouch(this);
+                }
                 break;
         }
         return true;

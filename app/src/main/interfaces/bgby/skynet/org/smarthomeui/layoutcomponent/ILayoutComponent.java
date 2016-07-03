@@ -2,6 +2,8 @@ package bgby.skynet.org.smarthomeui.layoutcomponent;
 
 import android.support.v4.app.Fragment;
 
+import org.skynet.bgby.layout.LayoutException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +36,7 @@ public interface ILayoutComponent {
 
     IDevice getDevice();
 
-    void setDevice(IDevice device);
+    void setDevice(IDevice device) throws LayoutException;
 
     void setParams(Map<String, Object> params);
 
