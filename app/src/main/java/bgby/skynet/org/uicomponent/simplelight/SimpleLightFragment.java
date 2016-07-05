@@ -1,6 +1,5 @@
 package bgby.skynet.org.uicomponent.simplelight;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,8 +43,9 @@ public class SimpleLightFragment extends BaseUiComponent {
         viewBackground = view.findViewById(R.id.cmpt_simplelight_background);
         txtName = (TextView) view.findViewById(R.id.cmpt_simplelight_name);
         imgModeIcon = (ImageView) view.findViewById(R.id.cmpt_simplelight_mode_icon);
-
         applyMaterials();
+        ISimpleLightDevice device = getLightDevice();
+        device.queryStatus();
         txtName.setText(layoutData.getDisplayName());
         updateValues();
         Log.d("CREATE FRAGMENT", "Finish Create " + this.getClass().getSimpleName());
@@ -79,15 +79,9 @@ public class SimpleLightFragment extends BaseUiComponent {
 
     private void applyMaterials() {
         MaterialsManager mmng = Controllers.getMaterialsManager();
-        int direction = getActivity().getRequestedOrientation();
-        String materialBkg = null;
-        if (direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            materialBkg = MATERIAL_BACKGROUD + "portrait";
-        } else {
-            materialBkg = MATERIAL_BACKGROUD + "landscape";
-        }
+        String materialBkg = MATERIAL_BACKGROUD + getScreenDirection();
         mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, viewBackground, materialBkg, null);
-        mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, viewBackground, MATERIAL_NAME, null);
+        mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, txtName, MATERIAL_NAME, null);
     }
 
     @Override

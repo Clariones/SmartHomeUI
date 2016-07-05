@@ -53,8 +53,8 @@ public class MaterialsManager {
     public static final String MATERIAL_ID_LIGH_OFF = "app/default/system/lightoff";
     public static final String MATERIAL_ID_CONTROL_ON = "app/default/system/controlon";
     public static final String MATERIAL_ID_CONTROL_OFF = "app/default/system/controloff";
-    public static final String MATERIAL_ID_FLOOR_HEATING_ON = "app/default/system/floorheatingon";
-    public static final String MATERIAL_ID_FLOOR_HEATING_OFF = "app/default/system/floorheatingoff";
+    public static final String MATERIAL_ID_FLOOR_HEATING_ON = "app/default/system/floorheat/on";
+    public static final String MATERIAL_ID_FLOOR_HEATING_OFF = "app/default/system/floorheat/off";
     public static final String MATERIAL_ID_SWITCH_ON = "app/default/system/switchon";
     public static final String MATERIAL_ID_SWITCH_OFF = "app/default/system/switchoff";
     public static final String MATERIAL_ID_SWITCH_PARTIAL = "app/default/system/switchpartial";
@@ -108,10 +108,10 @@ public class MaterialsManager {
             return null;
         }
         IMaterial result = null;
-        if (customMaterials != null){
+        if (customMaterials != null) {
             result = customMaterials.get(resourceName);
         }
-        if (result == null){
+        if (result == null) {
             result = defaultMaterials.get(resourceName);
         }
         return result;
@@ -235,14 +235,17 @@ public class MaterialsManager {
     }
 
     protected void parseMaterials(Properties prop, Map<String, IMaterial> materialsLib) {
-        for (Map.Entry<Object, Object> ent : prop.entrySet()) {
+        Iterator<Map.Entry<Object, Object>> it = prop.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<Object, Object> ent = it.next();
             String materialID = (String) ent.getKey();
             checkWildcharKey(materialID);
             String materialResource = (String) ent.getValue();
             String strOrgValue = materialResource.trim();
             int pos = strOrgValue.indexOf(':');
             if (pos < 0) {
-                ent.setValue(null);
+                it.remove();
+                Log.w(TAG, materialID + "=" + strOrgValue + " value is invalid. Drop it");
                 continue;
             }
             String materialType = strOrgValue.substring(0, pos).toLowerCase().trim();
@@ -338,7 +341,11 @@ public class MaterialsManager {
             material = this.getMaterial(defMaterialID);
         }
         if (material == null) {
-            Log.d(TAG, "neither " + materialId + " nor " + defMaterialID + " found. Skip.");
+            if (defMaterialID != null) {
+                Log.d(TAG, "neither " + materialId + " nor " + defMaterialID + " found. Skip.");
+            } else {
+                Log.d(TAG, "Material " + materialId + " not found. Skip.");
+            }
             return; //
         }
         switch (applyType) {
@@ -348,14 +355,14 @@ public class MaterialsManager {
             case APPLY_TO_DRAWABLE_IMAGE:
                 if (view instanceof ImageView) {
                     material.applyToDrawableImage((ImageView) view);
-                }else{
+                } else {
                     Log.w(TAG, materialId + " is not apply to an ImageView. Skip");
                 }
                 break;
             case APPLY_TO_FONT:
                 if (view instanceof TextView) {
                     material.applyToFont((TextView) view);
-                }else{
+                } else {
                     Log.w(TAG, materialId + " is not apply to an TextView. Skip");
                 }
                 break;

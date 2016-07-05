@@ -108,10 +108,12 @@ public class LayoutComponentManager {
     }
 
     public void initSupportedLayoutComponents() throws LayoutException {
+        registedTypes.clear();
         registerLayoutComponentType(ControlPage.TYPE, ControlPage.class);
         registerLayoutComponentType(NormalHvacComponent.TYPE, NormalHvacComponent.class);
         registerLayoutComponentType(SimpleLightComponent.TYPE, SimpleLightComponent.class);
         registerLayoutComponentType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
         registerLayoutComponentType(SimpleDimmerComponent.TYPE, SimpleDimmerComponent.class);
+        registerLayoutComponentType(NormalFloorHeatingComponent.TYPE, NormalFloorHeatingComponent.class);
     }
 }

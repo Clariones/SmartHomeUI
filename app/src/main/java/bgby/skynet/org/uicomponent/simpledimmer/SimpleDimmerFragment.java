@@ -1,7 +1,6 @@
 package bgby.skynet.org.uicomponent.simpledimmer;
 
 import android.app.AlertDialog;
-import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -62,6 +61,7 @@ public class SimpleDimmerFragment extends BaseUiComponent {
         this.levelDialog = createDialog();
 
         applyMaterials();
+        getDimmerDevice().queryStatus();
         txtName.setText(layoutData.getDisplayName());
         updateValues();
         Log.d("CREATE FRAGMENT", "Finish Create " + this.getClass().getSimpleName());
@@ -101,15 +101,9 @@ public class SimpleDimmerFragment extends BaseUiComponent {
 
     private void applyMaterials() {
         MaterialsManager mmng = Controllers.getMaterialsManager();
-        int direction = getActivity().getRequestedOrientation();
-        String materialBkg = null;
-        if (direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            materialBkg = MATERIAL_BACKGROUD + "portrait";
-        } else {
-            materialBkg = MATERIAL_BACKGROUD + "landscape";
-        }
+        String materialBkg = MATERIAL_BACKGROUD + getScreenDirection();
         mmng.applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, viewBackground, materialBkg, null);
-        mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, viewBackground, MATERIAL_NAME, null);
+        mmng.applyMaterial(MaterialsManager.APPLY_TO_FONT, txtName, MATERIAL_NAME, null);
 
         if (STATE_ICONS[0] != null) {
             return;

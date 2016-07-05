@@ -96,31 +96,6 @@ public class NormalHvacDevice extends DeviceBaseImpl implements INormalHvacDevic
         }
     }
 
-    private boolean isInRange(String val, String[] vals) {
-        if (vals == null || vals.length < 1){
-            return false;
-        }
-
-        for(String vv : vals){
-            if (vv.equals(val)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Double asDouble(Object val) throws DeviceException {
-        try {
-            if (val instanceof  Number){
-                return ((Number) val).doubleValue();
-            }
-            return Double.parseDouble((String) val);
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new DeviceException("设备返回无效的数值 " + val, e);
-        }
-    }
-
     @Override
     protected void handleStatusReport(Map<String, String> params) {
         try {
@@ -134,10 +109,7 @@ public class NormalHvacDevice extends DeviceBaseImpl implements INormalHvacDevic
     @Override
     protected void onCommandResponse(IRestRequest request, Helper.RestResponseData response, Map<String, Object> result) {
         if (response.getErrorCode() != 0) {
-            if (response.getErrorCode() == 20006){
-                new Throwable("???").printStackTrace();
-            }
-            Controllers.showError("命令执行错误", response.getErrorCode()+":"+getDeviceId()+response.getResult());
+            errorResponse(response);
             return;
         }
         try {

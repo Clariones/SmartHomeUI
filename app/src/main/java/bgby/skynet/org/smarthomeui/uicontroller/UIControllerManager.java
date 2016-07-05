@@ -206,7 +206,8 @@ public class UIControllerManager {
                     continue;
                 }
                 String devId = (String) params.get(ILayoutComponent.PARAM_DEVICE_ID);
-                cmpt.setDevice(allDevices.get(devId));
+                IDevice device = allDevices.get(devId);
+                cmpt.setDevice(device);
             }
         } catch (DeviceException e) {
             e.printStackTrace();

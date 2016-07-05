@@ -55,7 +55,7 @@ public class DimmerDevice extends SwitchLightDevice implements ISimpleDimmerDevi
     @Override
     protected void onCommandResponse(IRestRequest request, Helper.RestResponseData response, Map<String, Object> result) {
         if (response.getErrorCode() != 0) {
-            Controllers.showError("命令执行错误", response.getErrorCode()+":"+response.getResult());
+            errorResponse(response);
             return;
         }
         Boolean newState = getParamBoolean(result, SimpleDimmer.TERM_LIGHT_STATUES, null);
@@ -69,6 +69,7 @@ public class DimmerDevice extends SwitchLightDevice implements ISimpleDimmerDevi
         if (levelVal != null) {
             try {
                 int newLevel = DriverUtils.getAsInt(levelVal, newState ? 100 : 0);
+                this.level = newLevel;
             }catch (Exception e){
                 Controllers.showError("错误的亮度值", String.valueOf(result.get(SimpleDimmer.TERM_DIMMER_LEVEL)));
                 return;

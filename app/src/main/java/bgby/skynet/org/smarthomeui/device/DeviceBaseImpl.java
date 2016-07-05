@@ -31,7 +31,9 @@ import fi.iki.elonen.NanoHTTPD;
 public abstract class DeviceBaseImpl implements IDevice {
     protected static final int FIELD_DEVICE_STATUES_PREFIX_LEGNTH = 12;
     protected String supportStandard;
-
+    protected long lastErrTS = 0;
+    protected int lastErrCode = 0;
+    protected long ERR_MSG_FILTE_TIME_SLOT = 2000L;
     protected String deviceId;
     protected String profileId;
     protected String displayName;
@@ -200,6 +202,43 @@ public abstract class DeviceBaseImpl implements IDevice {
 
     public void setCanDoQuery(boolean canDoQuery) {
         this.canDoQuery = canDoQuery;
+    }
+
+    protected boolean isInRange(String val, String[] vals) {
+        if (vals == null || vals.length < 1) {
+            return false;
+        }
+
+        for (String vv : vals) {
+            if (vv.equals(val)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected Double asDouble(Object val) throws DeviceException {
+        try {
+            if (val instanceof Number) {
+                return ((Number) val).doubleValue();
+            }
+            return Double.parseDouble((String) val);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeviceException("设备返回无效的数值 " + val, e);
+        }
+    }
+
+    protected void errorResponse(Helper.RestResponseData response) {
+        if (response.getErrorCode() == lastErrCode) {
+            long pstTime = System.currentTimeMillis() - lastErrTS;
+            if (pstTime < ERR_MSG_FILTE_TIME_SLOT) {
+                return;
+            }
+        }
+        Controllers.showError("命令执行错误", response.getErrorCode() + ":" + getDeviceId() + response.getResult());
+        lastErrCode = response.getErrorCode();
+        lastErrTS = System.currentTimeMillis();
     }
 
     protected abstract void handleStatusReport(Map<String, String> params);

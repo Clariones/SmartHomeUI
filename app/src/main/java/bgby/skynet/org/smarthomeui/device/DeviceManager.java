@@ -79,5 +79,6 @@ public class DeviceManager {
         addDeviceExample(new SwitchLightDevice());
         addDeviceExample(new DimmerDevice());
         addDeviceExample(new NormalHvacDevice());
+        addDeviceExample(new NormalFloorHeatingDevice());
     }
 }

@@ -51,7 +51,7 @@ public class SwitchLightDevice extends DeviceBaseImpl implements ISimpleLightDev
     @Override
     protected void onCommandResponse(IRestRequest request, Helper.RestResponseData response, Map<String, Object> result) {
         if (response.getErrorCode() != 0) {
-            Controllers.showError("命令执行错误", response.getErrorCode()+":"+response.getResult());
+            errorResponse(response);
             return;
         }
         Boolean newState = getParamBoolean(result, SimpleLight.TERM_LIGHT_STATUES, null);

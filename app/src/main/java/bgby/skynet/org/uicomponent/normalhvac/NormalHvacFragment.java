@@ -1,7 +1,6 @@
 package bgby.skynet.org.uicomponent.normalhvac;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -36,14 +35,11 @@ public class NormalHvacFragment extends BaseUiComponent {
     protected TextView txtTemperature;
     protected TextView txtName;
     protected ImageView imgModeIcon;
-    protected String imgModeIconMaterial;
 
     protected String currentMode;
     protected String displayName;
     protected Double currentTemperature;
 
-    protected static String defaultName = "OK";
-    protected static String defaultTemperature = "90";
     private Map<String, Drawable> modeIcons;
 
     public NormalHvacFragment() {
@@ -138,13 +134,7 @@ public class NormalHvacFragment extends BaseUiComponent {
     }
 
     protected void applyMaterials() {
-        int direction = getActivity().getRequestedOrientation();
-        String materialBkg = null;
-        if (direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
-            materialBkg = MATERIAL_BACKGROUD+"portrait";
-        }else{
-            materialBkg = MATERIAL_BACKGROUD+"landscape";
-        }
+        String materialBkg = MATERIAL_BACKGROUD + getScreenDirection();
         applyImageDrable((ImageView) viewBackground, materialBkg);
         applyFont(txtTemperature, MATERIAL_TEMPERATURE);
         applyFont(txtName, MATERIAL_NAME);

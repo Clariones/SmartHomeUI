@@ -2,10 +2,10 @@ package bgby.skynet.org.uicomponent.base;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,7 +14,7 @@ import android.widget.TextView;
 import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.smarthomeui.uicontroller.UIControllerManager;
-import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
+import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
 
 /**
@@ -123,6 +123,16 @@ public class BaseUiComponent extends Fragment implements  IUiComponent{
             }
         });
     }
+
+    protected String getScreenDirection(){
+        int direction = getActivity().getRequestedOrientation();
+        if (direction == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT || direction == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            return "portrait";
+        } else {
+            return "landscape";
+        }
+    }
+
     @Override
     public void onDeviceStatusChanged(IDevice device) {
         // by default, do nothing. Need each component handle this itself
@@ -137,33 +147,14 @@ public class BaseUiComponent extends Fragment implements  IUiComponent{
     }
 
     protected void applyImageDrable(ImageView imgView, String meaterialName) {
-        IMaterial drawable = Controllers.getMaterialsManager().getMaterial(meaterialName);
-        if (drawable == null){
-            Log.d(TAG, "apply image for " + meaterialName + " not found");
-            return;
-        }
-        Log.d(TAG, "apply image for " + meaterialName + " not found");
-        drawable.applyToDrawableImage(imgView);
+        Controllers.getMaterialsManager().applyMaterial(MaterialsManager.APPLY_TO_DRAWABLE_IMAGE, imgView, meaterialName, null);
     }
 
     protected void applyBackground(View view, String meaterialName) {
-        IMaterial drawable = Controllers.getMaterialsManager().getMaterial(meaterialName);
-        if (drawable == null){
-            Log.d(TAG, "apply background for " + meaterialName + " not found");
-            return;
-        }
-        drawable.applyToBackgroup(view);
-        Log.d(TAG, "apply background for " + meaterialName);
+        Controllers.getMaterialsManager().applyMaterial(MaterialsManager.APPLY_TO_BACKGROUND, view, meaterialName, null);
     }
 
     protected void applyFont(TextView textView, String meaterialName) {
-
-        IMaterial drawable = Controllers.getMaterialsManager().getMaterial(meaterialName);
-        if (drawable == null){
-            Log.d(TAG, "apply font for " + meaterialName + " not found");
-            return;
-        }
-        Log.d(TAG, "apply font for " + meaterialName );
-        drawable.applyToFont(textView);
+        Controllers.getMaterialsManager().applyMaterial(MaterialsManager.APPLY_TO_FONT, textView, meaterialName, null);
     }
 }
