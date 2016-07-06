@@ -30,7 +30,7 @@ import bgby.skynet.org.smarthomeui.device.INormalHvacDevice;
 import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.smarthomeui.uicontroller.UIControllerManager;
 import bgby.skynet.org.smarthomeui.uimaterials.ColorMaterial;
-import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
+import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.FontMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
@@ -47,7 +47,7 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
             MaterialsManager.MATERIAL_ID_DEF7, MaterialsManager.MATERIAL_ID_DEF8, MaterialsManager.MATERIAL_ID_DEF9
     };
     protected INormalHvacDevice device;
-    protected View view;
+    protected View bkgView;
     protected View statuesBarBackground;
     protected ImageView imgLogo;
     protected TextView txtDisplayName;
@@ -89,7 +89,7 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         ILayoutComponent layout = uiCtrl.getLayoutComponent(layoutId);
         setLayoutData(layout);
 
-        // step3: connect this view to correct device
+        // step3: connect this bkgView to correct device
         String deviceId = layout.getDeviceID();
         Log.i(TAG, "Create with device ID " + deviceId);
         device = (INormalHvacDevice) getDeviceById(deviceId);
@@ -100,7 +100,7 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         initMembers();
         applyMaterials();
 
-
+        txtDisplayName.setText(getDisplayName());
         updateFanModeIcon();
         updateRunningModeIcon();
     }
@@ -121,7 +121,7 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
     }
 
     protected void initMembers() {
-        view = findViewById(R.id.normalHvac_activity_background);
+        bkgView = findViewById(R.id.normalHvac_activity_background);
         statuesBarBackground = findViewById(R.id.normalHvac_statusBar_background);
         imgLogo = (ImageView) findViewById(R.id.normalHvac_statusBar_logo);
         txtDisplayName = (TextView) findViewById(R.id.normalHvac_statusBar_displayName);
@@ -148,12 +148,6 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         sliderSetTemperature.setValueLowLimit(device.getSettingTemperatureLowLimit().floatValue());
         sliderSetTemperature.setValueHighLimit(device.getSettingTemperatureHighLimit().floatValue());
         sliderSetTemperature.setOnProgressChangedListener(new TemperatureSettingListener());
-//        sliderSetTemperature.setOnProgressChangedListener(new OnProgressChangedListener() {
-//            @Override
-//            public void onProgressChanged(RoundSeekBar roundSeekBar, float progress) {
-//                onChangeSettingTemperature(progress);
-//            }
-//        });
 
         if (device.getRoomTemperature() != null) {
             barRoomTemperature.setProgress(device.getRoomTemperature().floatValue());
@@ -205,7 +199,7 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
     protected void applyMaterials() {
         String direction = getDirectionName();
         // background
-        MaterialInfo.push(MaterialInfo.BACKGROUND, view, direction, MATERIAL_ID_PREFIX + "/background", "app/homepage/" + direction + "/background");
+        MaterialInfo.push(MaterialInfo.BACKGROUND, bkgView, direction, MATERIAL_ID_PREFIX + "/background", "app/homepage/" + direction + "/background");
         // status bar
         MaterialInfo.push(MaterialInfo.BACKGROUND, statuesBarBackground, direction, MATERIAL_ID_PREFIX + "/statusbar/background", null);
         MaterialInfo.push(MaterialInfo.IMAGE, imgLogo, direction, MATERIAL_ID_PREFIX + "/statusbar/logo", MaterialsManager.MATERIAL_ID_LOGO);
@@ -268,12 +262,12 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         }
         // Temperature seek bar
         material = MaterialInfo.getMaterial("/setTemperatureDisk/background", direction);
-        if (material instanceof DrawableMaterail) {
-            sliderSetTemperature.setWheel(((DrawableMaterail) material).getDrawable());
+        if (material instanceof DrawableMaterial) {
+            sliderSetTemperature.setWheel(((DrawableMaterial) material).getDrawable());
         }
         material = MaterialInfo.getMaterial("/setTemperatureDisk/pointer", direction);
-        if (material instanceof DrawableMaterail) {
-            sliderSetTemperature.setArrow(((DrawableMaterail) material).getDrawable());
+        if (material instanceof DrawableMaterial) {
+            sliderSetTemperature.setArrow(((DrawableMaterial) material).getDrawable());
         }
 
         MaterialInfo.applyMaterials();
@@ -287,10 +281,10 @@ public class NormalHvacControlActivity extends FragmentActivity implements IUiCo
         for (int i = 0; i < result.length; i++) {
             IMaterial drwMaterial = mmng.getMaterial(keyBase + selections[i]);
             Log.d(TAG, "Query material " + keyBase + selections[i] + " got " + drwMaterial);
-            if (drwMaterial instanceof DrawableMaterail) {
-                result[i] = ((DrawableMaterail) drwMaterial).getDrawable();
+            if (drwMaterial instanceof DrawableMaterial) {
+                result[i] = ((DrawableMaterial) drwMaterial).getDrawable();
             } else {
-                result[i] = ((DrawableMaterail) getSystemDefaultIcon(i + 1)).getDrawable();
+                result[i] = ((DrawableMaterial) getSystemDefaultIcon(i + 1)).getDrawable();
             }
         }
         return result;

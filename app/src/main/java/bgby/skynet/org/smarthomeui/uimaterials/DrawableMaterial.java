@@ -9,7 +9,7 @@ import android.widget.ImageView;
 /**
  * Created by Clariones on 6/2/2016.
  */
-public class DrawableMaterail extends BaseMaterial {
+public class DrawableMaterial extends BaseMaterial {
     private final BitmapDrawable drawable;
     protected Bitmap bitmap;
     protected Context initialContext;
@@ -34,7 +34,7 @@ public class DrawableMaterail extends BaseMaterial {
         this.initialContext = initialContext;
     }
 
-    public DrawableMaterail(Context context, Bitmap bitmap) {
+    public DrawableMaterial(Context context, Bitmap bitmap) {
         super();
         this.initialContext = context;
         this.bitmap = bitmap;

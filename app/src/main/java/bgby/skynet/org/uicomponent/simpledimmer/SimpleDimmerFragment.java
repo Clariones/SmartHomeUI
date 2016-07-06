@@ -15,7 +15,7 @@ import android.widget.TextView;
 import bgby.skynet.org.smarthomeui.R;
 import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.smarthomeui.device.ISimpleDimmerDevice;
-import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
+import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
@@ -112,23 +112,23 @@ public class SimpleDimmerFragment extends BaseUiComponent {
         if (material == null) {
             material = mmng.getMaterial(MaterialsManager.MATERIAL_ID_SWITCH_OFF);
         }
-        if (material instanceof DrawableMaterail) {
-            STATE_ICONS[STATE_OFF] = ((DrawableMaterail) material).getDrawable();
+        if (material instanceof DrawableMaterial) {
+            STATE_ICONS[STATE_OFF] = ((DrawableMaterial) material).getDrawable();
         }
 
         material = mmng.getMaterial(MATERIAL_ON_ICON);
         if (material == null) {
             material = mmng.getMaterial(MaterialsManager.MATERIAL_ID_SWITCH_ON);
         }
-        if (material instanceof DrawableMaterail) {
-            STATE_ICONS[STATE_ON] = ((DrawableMaterail) material).getDrawable();
+        if (material instanceof DrawableMaterial) {
+            STATE_ICONS[STATE_ON] = ((DrawableMaterial) material).getDrawable();
         }
         material = mmng.getMaterial(MATERIAL_MIDDLE_ICON);
         if (material == null) {
             material = mmng.getMaterial(MaterialsManager.MATERIAL_ID_SWITCH_PARTIAL);
         }
-        if (material instanceof DrawableMaterail) {
-            STATE_ICONS[STATE_MIDDLE] = ((DrawableMaterail) material).getDrawable();
+        if (material instanceof DrawableMaterial) {
+            STATE_ICONS[STATE_MIDDLE] = ((DrawableMaterial) material).getDrawable();
         }
 
     }

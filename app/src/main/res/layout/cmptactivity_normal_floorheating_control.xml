@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/normalFloorHeating_activity_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="bgby.skynet.org.uicomponent.normalfloorheating.NormalFloorHeatingActivity">
+
+    <LinearLayout
+        android:id="@+id/nu_whole_page_vertival"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/normalFloorHeating_statusBar_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/normalFloorHeating_statusBar_logo"
+                android:layout_width="@dimen/cmptpage_logoicon_width"
+                android:layout_height="@dimen/cmptpage_logoicon_height"
+                android:layout_centerVertical="true"
+                android:src="@drawable/logo" />
+
+            <TextView
+                android:id="@+id/normalFloorHeating_statusBar_displayName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+            <ImageButton
+                android:id="@+id/normalFloorHeating_statusBar_return"
+                android:layout_width="@dimen/cmptpage_logoicon_height"
+                android:layout_height="@dimen/cmptpage_logoicon_height"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@android:drawable/ic_menu_close_clear_cancel"
+                android:scaleType="fitXY" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/nu_showing_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center"
+            android:layout_weight="50">
+
+            <ImageView
+                android:id="@+id/normalFloorHeating_temperature_icon"
+                android:layout_width="@dimen/cmptactivity_normal_floorheating_temperature_icon_size"
+                android:layout_height="@dimen/cmptactivity_normal_floorheating_temperature_icon_size"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitXY" />
+
+            <LinearLayout
+                android:id="@+id/nu_tmperature_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/normalFloorHeating_temperature_icon"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/normalFloorHeating_temperature_room"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--.-"
+                        android:textSize="@dimen/cmptactivity_normal_hvac_roomtemperature_textsize" />
+
+                    <TextView
+                        android:id="@+id/normalFloorHeating_temperature_room_unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="℃"
+                        android:textSize="@dimen/cmptactivity_normal_hvac_roomtemperature_textsize" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/normalFloorHeating_temperature_set"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:text="--.-"
+                        android:textSize="@dimen/cmptactivity_normal_hvac_settemperature_textsize" />
+
+                    <TextView
+                        android:id="@+id/normalFloorHeating_temperature_set_unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="℃"
+                        android:textSize="@dimen/cmptactivity_normal_hvac_settemperature_textsize" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/nu_turn_disk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="30"
+            android:layout_margin="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginBottom="0dp">
+
+            <bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout
+                android:id="@+id/nu_slider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+
+                <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
+                    android:id="@+id/normalFloorHeating_temperature_room_bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerInParent="true"
+                    app:cavityRatio="0.95"
+                    app:degree="240"
+                    app:diameter="500dp"
+                    app:hasTickMark="true"
+                    app:progressBarWidth="8dp"
+                    app:tickMarkColor="@android:color/white"
+                    app:tickMarkLineLength="10dp"
+                    app:tickMarkTextSize="12dp"></bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
+
+                <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
+                    android:id="@+id/normalFloorHeating_temperature_set_bar"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_centerInParent="true"
+                    app:cavityRatio="0.95"
+                    app:degree="240"
+                    app:diameter="500dp"
+                    app:hasTickMark="false"
+                    app:layout_inside="@id/normalFloorHeating_temperature_room_bar"></bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
+
+                <bgby.skynet.org.customviews.roundseekbar.RoundSeekBar
+                    android:id="@+id/normalFloorHeating_temperature_set_slider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:arrow="@drawable/roundsliderarrow"
+                    app:degree="240"
+                    app:diameter="500dp"
+                    app:layout_inside="@id/normalFloorHeating_temperature_set_bar"
+                    app:maxValue="35"
+                    app:minValue="16"
+                    app:startDegree="150"
+                    app:valueHighLimit="35"
+                    app:valueLowLimit="18"
+                    app:wheel="@drawable/roundsliderbkg" />
+            </bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/nu_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="50">
+
+            <ImageButton
+                android:id="@+id/normalFloorHeating_state_button"
+                android:layout_width="@dimen/cmptactivity_normal_floorheating_switch_image_width"
+                android:layout_height="@dimen/cmptactivity_normal_floorheating_switch_image_height"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:scaleType="fitCenter" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -82,6 +82,7 @@ public class NormalFloorHeatingDevice extends DeviceBaseImpl implements INormalF
     @Override
     public void setTemperatureSetting(Double temperatureSetting) {
         this.temperatureSetting = temperatureSetting;
+        exeCmd(NormalFloorHeating.CMD_SET_TEMPERATURE, NormalFloorHeating.TERM_SET_TEMPERATURE, String.valueOf(temperatureSetting));
     }
 
     @Override

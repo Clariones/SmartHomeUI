@@ -17,7 +17,7 @@ import java.util.Map;
 import bgby.skynet.org.smarthomeui.R;
 import bgby.skynet.org.smarthomeui.device.IDevice;
 import bgby.skynet.org.smarthomeui.device.INormalHvacDevice;
-import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterail;
+import bgby.skynet.org.smarthomeui.uimaterials.DrawableMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.IMaterial;
 import bgby.skynet.org.smarthomeui.uimaterials.MaterialsManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
@@ -28,7 +28,7 @@ public class NormalHvacFragment extends BaseUiComponent {
     protected static final String MATERIAL_MODE_ICON = "normalHVAC/summary/1x1/runningMode/";
     protected static final String MATERIAL_TEMPERATURE = "normalHVAC/summary/1x1/roomTemperature";
     protected static final String MATERIAL_NAME = "normalHVAC/summary/1x1/displayName";
-    private static final String TAG = "NormalHvacFragment";
+    protected static final String TAG = "NormalHvacFragment";
 
 
     protected View viewBackground;
@@ -40,7 +40,7 @@ public class NormalHvacFragment extends BaseUiComponent {
     protected String displayName;
     protected Double currentTemperature;
 
-    private Map<String, Drawable> modeIcons;
+    protected Map<String, Drawable> modeIcons;
 
     public NormalHvacFragment() {
 
@@ -79,18 +79,18 @@ public class NormalHvacFragment extends BaseUiComponent {
         return view;
     }
 
-    private INormalHvacDevice getHvacDevice() {
+    protected INormalHvacDevice getHvacDevice() {
         return (INormalHvacDevice) layoutData.getDevice();
     }
 
-    private void openControlPage() {
+    protected void openControlPage() {
         Intent intent = new Intent();
         intent.setClass(getActivity(), NormalHvacControlActivity.class);
         intent.putExtra(ARG_COMPONENT_ID,layoutData.getComponentId());
         getActivity().startActivity(intent);
     }
 
-    private void updateValues() {
+    protected void updateValues() {
         INormalHvacDevice device = getHvacDevice();
         currentMode = device.getRunningMode();
         currentTemperature= device.getRoomTemperature();
@@ -101,7 +101,7 @@ public class NormalHvacFragment extends BaseUiComponent {
         updateDisplayName();
     }
 
-    private void updateDisplayName() {
+    protected void updateDisplayName() {
         if (displayName == null || displayName.isEmpty()){
             txtName.setText(R.string.common_undefined_device_name);
         }else{
@@ -109,7 +109,7 @@ public class NormalHvacFragment extends BaseUiComponent {
         }
     }
 
-    private void updateDisplayTemperature() {
+    protected void updateDisplayTemperature() {
         if (currentTemperature == null){
             txtTemperature.setText(R.string.common_undefined_value);
             return;
@@ -118,7 +118,7 @@ public class NormalHvacFragment extends BaseUiComponent {
         txtTemperature.setText(strTmpt);
     }
 
-    private void updateDisplayMode() {
+    protected void updateDisplayMode() {
         if (currentMode == null){
             imgModeIcon.setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.normal_hvac_summary));
             return;
@@ -146,10 +146,10 @@ public class NormalHvacFragment extends BaseUiComponent {
         for(int i = 0; i< modes.length; i++){
             String mId = MATERIAL_MODE_ICON + modes[i];
             IMaterial material = mmng.getMaterial(mId);
-            if (material instanceof DrawableMaterail){
-                icons.put(mId, ((DrawableMaterail) material).getDrawable());
+            if (material instanceof DrawableMaterial){
+                icons.put(mId, ((DrawableMaterial) material).getDrawable());
             }else{
-                icons.put(mId, ((DrawableMaterail)mmng.getMaterial(NormalHvacControlActivity.defMaterialIds[i])).getDrawable());
+                icons.put(mId, ((DrawableMaterial)mmng.getMaterial(NormalHvacControlActivity.defMaterialIds[i])).getDrawable());
             }
         }
         this.modeIcons = icons;

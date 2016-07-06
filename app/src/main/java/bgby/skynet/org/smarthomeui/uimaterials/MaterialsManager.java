@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -229,7 +230,7 @@ public class MaterialsManager {
             }
             Log.d(TAG, "Load bitmap " + entry.getName());
             Bitmap bm = BitmapFactory.decodeStream(zinIns);
-            materialsLib.put("file:" + fileName, new DrawableMaterail(getContext(), bm));
+            materialsLib.put("file:" + fileName, new DrawableMaterial(getContext(), bm));
         }
         zinIns.close();
     }
@@ -297,10 +298,10 @@ public class MaterialsManager {
         return new ColorMaterial(Color.parseColor(materialData));
     }
 
-    protected DrawableMaterail loadFileMaterial(byte[] data) {
+    protected DrawableMaterial loadFileMaterial(byte[] data) {
         BitmapFactory.Options options = new BitmapFactory.Options();// Create object of bitmapfactory's option method for further option use
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-        return new DrawableMaterail(context, bitmap);
+        return new DrawableMaterial(context, bitmap);
     }
 
 
@@ -367,5 +368,50 @@ public class MaterialsManager {
                 }
                 break;
         }
+    }
+
+    public Drawable getDrawable(String reqId, String defId){
+        IMaterial rst = getMaterial(reqId);
+        if (rst instanceof DrawableMaterial){
+            return ((DrawableMaterial) rst).getDrawable();
+        }
+        if (defId == null){
+            return null;
+        }
+        rst = getMaterial(defId);
+        if (rst instanceof DrawableMaterial){
+            return ((DrawableMaterial) rst).getDrawable();
+        }
+        return null;
+    }
+
+    public int getColor(String reqId, String defId, int defColor){
+        IMaterial rst = getMaterial(reqId);
+        if (rst instanceof  ColorMaterial){
+            return ((ColorMaterial) rst).getColor();
+        }
+        if (defId == null){
+            return defColor;
+        }
+        rst = getMaterial(defId);
+        if (rst instanceof  ColorMaterial){
+            return  ((ColorMaterial) rst).getColor();
+        }
+        return defColor;
+    }
+
+    public FontMaterial getFont(String reqId, String defId){
+        IMaterial rst = getMaterial(reqId);
+        if (rst instanceof  FontMaterial){
+            return (FontMaterial) rst;
+        }
+        if (defId == null){
+            return null;
+        }
+        rst = getMaterial(defId);
+        if (rst instanceof  FontMaterial){
+            return (FontMaterial) rst;
+        }
+        return null;
     }
 }

@@ -17,4 +17,9 @@
     <dimen name="cmptactivity_normal_hvac_button_size">48dp</dimen>
     <dimen name="cmptactivity_normal_hvac_button_margin">48dp</dimen>
     <dimen name="cmptactivity_normal_hvac_selection_text_size">32dp</dimen>
+    <dimen name="cmptactivity_normal_floorheating_temperature_icon_size">64dp</dimen>
+    <dimen name="cmptactivity_normal_floorheating_temperature_left_margin">24dp</dimen>
+    <dimen name="cmptactivity_normal_floorheating_switch_image_width">180dp</dimen>
+    <dimen name="cmptactivity_normal_floorheating_switch_image_height">60dp</dimen>
+    <dimen name="cmptactivity_normal_floorheating_disk_height">300dp</dimen>
 </resources>

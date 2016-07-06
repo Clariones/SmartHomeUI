@@ -20,4 +20,5 @@
     <string name="direction_landscape_reverse">反向横屏</string>
     <string name="direction_portait">竖屏</string>
     <string name="direction_portait_reverse">反向竖屏</string>
+    <string name="title_activity_normal_floor_heating">NormalFloorHeatingActivity</string>
 </resources>
