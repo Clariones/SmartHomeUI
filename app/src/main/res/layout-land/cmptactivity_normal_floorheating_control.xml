@@ -173,7 +173,7 @@
                     android:layout_centerInParent="true"
                     app:cavityRatio="0.95"
                     app:degree="240"
-                    app:diameter="260dp"
+                    app:diameter="@dimen/cmptactivity_normal_floorheating_disk_diameter"
                     app:hasTickMark="true"
                     app:progressBarWidth="8dp"
                     app:tickMarkColor="@android:color/white"

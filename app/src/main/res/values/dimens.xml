@@ -22,4 +22,5 @@
     <dimen name="cmptactivity_normal_floorheating_switch_image_width">180dp</dimen>
     <dimen name="cmptactivity_normal_floorheating_switch_image_height">60dp</dimen>
     <dimen name="cmptactivity_normal_floorheating_disk_height">300dp</dimen>
+    <dimen name="cmptactivity_normal_floorheating_disk_diameter">260dp</dimen>
 </resources>
