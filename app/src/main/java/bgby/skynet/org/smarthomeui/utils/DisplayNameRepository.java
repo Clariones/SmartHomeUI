@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 
 import org.skynet.bgby.driverutils.SimpleFileRepository;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,6 +33,16 @@ public class DisplayNameRepository extends SimpleFileRepository<Map<String, Stri
         setDevelopingMode(false);
         Map<String, String> data = gson.fromJson(new InputStreamReader(fIns), new TypeToken<Map<String, String>>(){}.getType());
         return data;
+    }
+
+    @Override
+    protected void verifyData(Map<String, String> data) throws IOException {
+
+    }
+
+    @Override
+    protected String getDataKey(File dataFile, Map<String, String> result) {
+        return LAYOUT_DISPLAY;
     }
 
     public Map<String, String> getData() {

@@ -158,7 +158,7 @@ public class StartPageActivity extends Activity {
 //            Log.w(TAG, "Already started");
 //            return;
 //        }
-
+        Log.e(TAG, System.getProperty("java.io.tmpdir"));
         callback.onProgress(0.01, "加载素材", "正在加载素材包...");
         try {
             Thread.sleep(1000);

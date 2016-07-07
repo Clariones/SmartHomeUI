@@ -2,7 +2,7 @@
     <string name="app_name">智能控制屏</string>
     <string name="btn_error_report">详细信息</string>
     <string name="pref_title_multicast_address">组播监听地址</string>
-    <string name="pref_title_multicast_port">组播监听端口</string>
+    <string name="pref_title_multicast_port">监听广播端口</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="pref_title_driverproxy_address">驱动代理地址</string>
     <string name="pref_title_driverproxy_port">驱动代理服务端口</string>

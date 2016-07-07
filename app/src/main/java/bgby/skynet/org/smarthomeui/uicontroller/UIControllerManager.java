@@ -13,10 +13,9 @@ import org.skynet.bgby.driverutils.DriverUtils;
 import org.skynet.bgby.layout.ILayout;
 import org.skynet.bgby.layout.LayoutData;
 import org.skynet.bgby.layout.LayoutException;
+import org.skynet.bgby.listeningserver.DirectBroadcastMessageService;
 import org.skynet.bgby.listeningserver.IUdpMessageHandler;
 import org.skynet.bgby.listeningserver.ListeningServerException;
-import org.skynet.bgby.listeningserver.MessageService;
-import org.skynet.bgby.listeningserver.MessageService.UdpMessageHandlingContext;
 import org.skynet.bgby.protocol.IHttpResponse;
 import org.skynet.bgby.protocol.IRestRequest;
 import org.skynet.bgby.protocol.RestRequestImpl;
@@ -42,10 +41,10 @@ import java.util.logging.Level;
 import bgby.skynet.org.smarthomeui.device.DeviceException;
 import bgby.skynet.org.smarthomeui.device.DeviceManager;
 import bgby.skynet.org.smarthomeui.device.IDevice;
+import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.smarthomeui.layoutcomponent.LayoutComponentManager;
 import bgby.skynet.org.smarthomeui.utils.Controllers;
 import bgby.skynet.org.smarthomeui.utils.DisplayNameRepository;
-import bgby.skynet.org.smarthomeui.layoutcomponent.ILayoutComponent;
 import bgby.skynet.org.uicomponent.base.IUiComponent;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
@@ -53,12 +52,13 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
 public class UIControllerManager {
 
     private static final String TAG = "UIControllerManager";
+    private static final long HEART_BEAT_PERIOD = 5 * 1000;
 
     private IInitialProgressCallback progressCallback;
     private UIControllerConfig startConfig;
     private StringBuilder errorReport;
     private boolean hasError;
-    private MessageService messageListeningService;
+    private SimpleUdpMessageService messageListeningService;
     private UIControllerRestClient restClient;
     private String queryLayoutResult;
     private CmdGetProfileByDevice.DeviceProfilesRestResult queryProfileResult;
@@ -72,6 +72,8 @@ public class UIControllerManager {
     protected DisplayNameRepository displayNameRepository;
     private Map<String, String> displayNameMap;
     private File internalFileFolder;
+    private Thread heartBeatService;
+    private boolean wantStop = false;
 
     public LayoutComponentManager getLayoutComponentManager() {
         return layoutComponentManager;
@@ -366,11 +368,10 @@ public class UIControllerManager {
         restClient.setConnectionTimeout(30 * 1000);
         restClient.setReadTimeout(30 * 1000);
 
-
-        // 启动组播监听线程
-        this.messageListeningService = new MessageService();
+        // 启动UDP消息监听线程
+        this.messageListeningService = new SimpleUdpMessageService();
         messageListeningService.setDamon(false);
-        messageListeningService.setListeningAddress(this.startConfig.getMulticastAddress().getHostName());
+        messageListeningService.setListeningAddress(this.startConfig.getDriverProxyAddress().getHostAddress());
         messageListeningService.setListeningPort(this.startConfig.getMulticastPort());
         messageListeningService.setCodec(new UdpMessageCodec());
         IUdpMessageHandler handler = new MulticastMessageListener();
@@ -385,6 +386,27 @@ public class UIControllerManager {
             return UIControllerStatus.START_SERVICES_FAILED;
         }
 
+        // 启动心跳线程
+        heartBeatService = new Thread() {
+            @Override
+            public void run() {
+                UdpMessage hbMsg = new UdpMessage();
+                hbMsg.setCommand(UdpMessage.CMD_HEART_BEAT);
+                hbMsg.setFromDevice(startConfig.getControllerID());
+                hbMsg.setFromApp(UdpMessage.APP_TOUCH_PAD);
+
+                InetSocketAddress address = new InetSocketAddress(startConfig.getDriverProxyAddress(), startConfig.getMulticastPort());
+                while(!wantStop){
+                    try {
+                        Thread.sleep(HEART_BEAT_PERIOD);
+                    } catch (InterruptedException e) {
+                        // just wait sleep, no exception need handle
+                    }
+                    messageListeningService.sendMessage(hbMsg, address);
+                }
+            }
+        };
+        heartBeatService.start();
         return UIControllerStatus.REQUEST_LAYOUT;
     }
 
@@ -447,6 +469,7 @@ public class UIControllerManager {
 
     public void stopStartingThread() {
         starting = false;
+        wantStop = true;
         if (startingThread != null) {
             startingThread.interrupt();
         }
@@ -454,11 +477,20 @@ public class UIControllerManager {
             messageListeningService.stop();
         }
 
+        if (heartBeatService != null){
+            heartBeatService.interrupt();
+        }
+
     }
 
     public void stop(){
+        wantStop = true;
+
         if (messageListeningService != null) {
             messageListeningService.stop();
+        }
+        if (heartBeatService != null){
+            heartBeatService.interrupt();
         }
     }
     public void executeCmd(final IRestRequest request, final IRestCommandListener listener) {
@@ -568,12 +600,11 @@ public class UIControllerManager {
     public class MulticastMessageListener implements IUdpMessageHandler {
 
         @Override
-        public void handleMessage(UdpMessageHandlingContext context) {
+        public void handleMessage(DirectBroadcastMessageService.UdpMessageHandlingContext context) {
             context.setServed(true);
             context.setResponseMessage(handleUdpMessage(context.getInputMessage()));
         }
 
     }
-
 
 }

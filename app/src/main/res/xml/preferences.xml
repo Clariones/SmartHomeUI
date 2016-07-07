@@ -19,10 +19,6 @@
         android:defaultValue="8981"
         android:inputType="number"/>
     <EditTextPreference
-        android:key="pref_key_multicast_address"
-        android:title="@string/pref_title_multicast_address"
-        android:defaultValue="224.0.0.4"/>
-    <EditTextPreference
         android:key="pref_key_multicast_port"
         android:title="@string/pref_title_multicast_port"
         android:defaultValue="8982"
