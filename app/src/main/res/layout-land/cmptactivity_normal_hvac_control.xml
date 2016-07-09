@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/normalHvac_activity_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:id="@+id/normalHvac_activity_background"
     tools:context="bgby.skynet.org.uicomponent.normalhvac.NormalHvacControlActivity">
 
     <LinearLayout
@@ -42,227 +42,232 @@
                 android:layout_height="@dimen/cmptpage_logoicon_height"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:scaleType="fitXY"
-                android:background="@android:drawable/ic_menu_close_clear_cancel" />
+                android:background="@android:drawable/ic_menu_close_clear_cancel"
+                android:scaleType="fitXY" />
         </RelativeLayout>
 
-        <FrameLayout
-            android:id="@+id/nu_top_margin"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/cmptactivity_normal_hvac_topmargin"
-            android:visibility="gone">
-
-        </FrameLayout>
-
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_weight="100"
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="100"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:id="@+id/nu_row_temperature"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_weight="1">
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:orientation="horizontal">
 
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:id="@+id/normalHvac_temperature_icon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:scaleType="fitXY" />
+                        android:layout_weight="50">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:orientation="vertical">
+                            android:layout_centerInParent="true"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/normalHvac_temperature_icon"
+                                android:layout_width="@dimen/cmptactivity_normal_hvac_temperature_icon_width"
+                                android:layout_height="@dimen/cmptactivity_normal_hvac_temperature_icon_height"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="left"
-                                android:orientation="horizontal">
+                                android:layout_gravity="center"
+                                android:orientation="vertical">
 
-                                <TextView
-                                    android:id="@+id/normalHvac_temperature_room"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="--.-"
-                                    android:textSize="@dimen/cmptactivity_normal_hvac_roomtemperature_textsize" />
-
-                                <TextView
-                                    android:id="@+id/normalHvac_temperature_room_unit"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="℃"
-                                    android:textSize="@dimen/cmptactivity_normal_hvac_roomtemperature_textsize" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="left"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:id="@+id/normalHvac_temperature_set"
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="left"
-                                    android:text="--.-"
-                                    android:textSize="@dimen/cmptactivity_normal_hvac_settemperature_textsize" />
+                                    android:orientation="horizontal">
 
-                                <TextView
-                                    android:id="@+id/normalHvac_temperature_set_unit"
+                                    <TextView
+                                        android:id="@+id/normalHvac_temperature_room"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="--.-"
+                                        android:textSize="@dimen/cmptactivity_normal_hvac_roomtemperature_textsize" />
+
+                                    <TextView
+                                        android:id="@+id/normalHvac_temperature_room_unit"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="℃"
+                                        android:textSize="@dimen/cmptactivity_normal_hvac_roomtemperature_textsize" />
+                                </LinearLayout>
+
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="℃"
-                                    android:textSize="@dimen/cmptactivity_normal_hvac_settemperature_textsize" />
+                                    android:layout_gravity="left"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/normalHvac_temperature_set"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="left"
+                                        android:text="--.-"
+                                        android:textSize="@dimen/cmptactivity_normal_hvac_settemperature_textsize" />
+
+                                    <TextView
+                                        android:id="@+id/normalHvac_temperature_set_unit"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="℃"
+                                        android:textSize="@dimen/cmptactivity_normal_hvac_settemperature_textsize" />
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
-                    </LinearLayout>
+                    </RelativeLayout>
 
-                    <LinearLayout
-                        android:id="@+id/nu_humidity"
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
+                        android:layout_weight="50">
 
-                        <ImageView
-                            android:id="@+id/normalHvac_humidity_icon"
+                        <LinearLayout
+                            android:id="@+id/nu_humidity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical" />
+                            android:layout_centerInParent="true"
+                            android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/normalHvac_humidity_room"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical|left"
-                            android:text="98.7%"
-                            android:textSize="@dimen/cmptactivity_normal_hvac_roomhumidity_textsize" />
-                    </LinearLayout>
+                            <ImageView
+                                android:id="@+id/normalHvac_humidity_icon"
+                                android:layout_width="@dimen/cmptactivity_normal_hvac_temperature_icon_width"
+                                android:layout_height="@dimen/cmptactivity_normal_hvac_temperature_icon_height"
+                                android:layout_gravity="center_vertical"
+                                android:scaleType="fitCenter" />
+
+                            <TextView
+                                android:id="@+id/normalHvac_humidity_room"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical|left"
+                                android:text="98.7%"
+                                android:textSize="@dimen/cmptactivity_normal_hvac_roomhumidity_textsize" />
+                        </LinearLayout>
+                    </RelativeLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/nu_buttons"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/cmptactivity_normal_hvac_button_margin"
-                    android:layout_marginTop="@dimen/cmptactivity_normal_hvac_button_margin"
-                    android:orientation="horizontal"
-                    android:gravity="bottom"
+                    android:layout_height="match_parent"
                     android:layout_gravity="bottom"
-                    android:layout_weight="0.1">
+                    android:layout_weight="50"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
 
                     <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:id="@+id/normalHvac_runningmode_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="100">
 
                         <ImageView
                             android:id="@+id/normalHvac_runningmode_set"
                             android:layout_width="@dimen/cmptactivity_normal_hvac_button_size"
                             android:layout_height="@dimen/cmptactivity_normal_hvac_button_size"
                             android:layout_centerInParent="true"
-                            android:scaleType="fitXY"
+                            android:scaleType="fitCenter"
                             android:src="@drawable/runningmode" />
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:id="@+id/normalHvac_fanspeed_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="100">
 
                         <ImageView
                             android:id="@+id/normalHvac_fanspeed_set"
                             android:layout_width="@dimen/cmptactivity_normal_hvac_button_size"
                             android:layout_height="@dimen/cmptactivity_normal_hvac_button_size"
                             android:layout_centerInParent="true"
-                            android:scaleType="fitXY"
+                            android:scaleType="fitCenter"
                             android:src="@drawable/fanspeed" />
                     </RelativeLayout>
                 </LinearLayout>
             </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="50"
+                android:orientation="horizontal">
 
-                <bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout
-                    android:id="@+id/nu_slider"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_gravity="center">
 
-                    <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
-                        android:id="@+id/normalHvac_temperature_room_bar"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_centerInParent="true"
-                        app:cavityRatio="0.95"
-                        app:degree="240"
-                        app:diameter="280dp"
-                        app:hasTickMark="true"
-                        app:tickMarkColor="@android:color/white"
-                        app:tickMarkLineLength="10dp"
-                        app:tickMarkTextSize="12dp"></bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
-
-                    <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
-                        android:id="@+id/normalHvac_temperature_set_bar"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_centerInParent="true"
-                        app:cavityRatio="0.95"
-                        app:degree="240"
-                        app:diameter="500dp"
-                        app:hasTickMark="false"
-                        app:layout_inside="@id/normalHvac_temperature_room_bar"></bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
-
-                    <bgby.skynet.org.customviews.roundseekbar.RoundSeekBar
-                        android:id="@+id/normalHvac_temperature_set_slider"
-                        android:layout_width="wrap_content"
+                    <bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout
+                        android:id="@+id/nu_slider"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:arrow="@drawable/roundsliderarrow"
-                        app:degree="240"
-                        app:diameter="500dp"
-                        app:layout_inside="@id/normalHvac_temperature_set_bar"
-                        app:maxValue="35"
-                        app:minValue="16"
-                        app:startDegree="150"
-                        app:valueHighLimit="35"
-                        app:valueLowLimit="18"
-                        app:wheel="@drawable/roundsliderbkg" />
-                </bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout>
+                        android:layout_centerInParent="true">
 
-            </RelativeLayout>
+                        <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
+                            android:id="@+id/normalHvac_temperature_room_bar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_centerInParent="true"
+                            app:cavityRatio="0.95"
+                            app:degree="240"
+                            app:hasTickMark="true"
+                            app:tickMarkColor="@android:color/white"
+                            app:tickMarkLineLength="10dp"
+                            app:progressBarWidth="8dp"
+                            app:tickMarkTextSize="12dp"></bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
 
+                        <bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar
+                            android:id="@+id/normalHvac_temperature_set_bar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_centerInParent="true"
+                            app:cavityRatio="0.95"
+                            app:degree="240"
+                            app:hasTickMark="false"
+                            app:layout_inside="@id/normalHvac_temperature_room_bar"></bgby.skynet.org.customviews.arcprogressbar.ArcProgressBar>
+
+                        <bgby.skynet.org.customviews.roundseekbar.RoundSeekBar
+                            android:id="@+id/normalHvac_temperature_set_slider"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:arrow="@drawable/roundsliderarrow"
+                            app:degree="240"
+                            app:startDegree="150"
+                            app:layout_inside="@id/normalHvac_temperature_set_bar"
+                            app:wheel="@drawable/roundsliderbkg" />
+                    </bgby.skynet.org.customviews.circlecentrelayout.CircleCentreRelaytiveLayout>
+
+                </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
-
-
-
-
     </LinearLayout>
-
 </RelativeLayout>

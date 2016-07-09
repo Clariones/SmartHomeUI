@@ -193,7 +193,7 @@ public class StartPageActivity extends Activity {
             config.setControllerID(prefs.getString(SettingsFragment.KEY_MINE_ID, null));
             config.setDriverProxyAddress(InetAddress.getByName(prefs.getString(SettingsFragment.KEY_PROXY_ADDRESS, null)));
             config.setDriverProxyPort(Integer.parseInt(prefs.getString(SettingsFragment.KEY_PROXY_PORT, "-1")));
-            config.setMulticastAddress(InetAddress.getByName(prefs.getString(SettingsFragment.KEY_MULTICAST_ADDRESS, null)));
+//            config.setMulticastAddress(InetAddress.getByName(prefs.getString(SettingsFragment.KEY_MULTICAST_ADDRESS, null)));
             config.setMulticastPort(Integer.parseInt(prefs.getString(SettingsFragment.KEY_MULTICAST_PORT, "-1")));
 
             uiControlManager.setInternalFileFolder(getFilesDir());

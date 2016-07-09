@@ -198,6 +198,15 @@ public class RoundSeekBar extends View implements ICentredView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.i(TAG, "EVENT ACTION=" + event.getAction());
+        Log.d(TAG, "MOVE EVENT");
+        Double standardTouchAngle = calcTouchDegree(event);
+        if (standardTouchAngle == null) {
+            return false;
+        }
+        Double turnedAngel = handleSlideBoundary(standardTouchAngle);
+        if (turnedAngel == null) {
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
 //                Log.i(TAG, "DOWN EVENT");
@@ -207,15 +216,7 @@ public class RoundSeekBar extends View implements ICentredView {
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "MOVE EVENT");
-                Double standardTouchAngle = calcTouchDegree(event);
-                if (standardTouchAngle == null) {
-                    return false;
-                }
-                Double turnedAngel = handleSlideBoundary(standardTouchAngle);
-                if (turnedAngel == null) {
-                    return false;
-                }
+
                 double touchValue = convertToTouchValue(turnedAngel);
                 Log.d(TAG, "Turn progress to " + touchValue);
                 setProgress((float) touchValue);
@@ -311,7 +312,14 @@ public class RoundSeekBar extends View implements ICentredView {
 
 
     protected void onDraw(Canvas canvas) {
+        Bitmap tempBMP = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas tempCanvas = new Canvas(tempBMP);
+        drawDisk(tempCanvas);
+        canvas.drawBitmap(tempBMP, 0, 0, null);
+//        drawDisk(canvas);
+    }
 
+    private void drawDisk(Canvas canvas) {
         int radius = (int) (renderDiameter / 2 );
         canvas.save();
         double drawProgress = getProgress();

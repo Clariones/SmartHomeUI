@@ -13,7 +13,7 @@ import bgby.skynet.org.smarthomeui.utils.Controllers;
 /**
  */
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-    protected static final String KEY_MULTICAST_ADDRESS = "pref_key_multicast_address";
+//    protected static final String KEY_MULTICAST_ADDRESS = "pref_key_multicast_address";
     protected static final String KEY_ROTATE_SCREEN = "pref_key_rotate_screen";
     protected static final String KEY_MULTICAST_PORT = "pref_key_multicast_port";
     protected static final String KEY_PROXY_ADDRESS = "pref_key_driverproxy_address";
@@ -21,7 +21,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     protected static final String KEY_MINE_ID = "pref_key_mine_id";
     protected static final String KEY_MATERIAL_FOLDER = "pref_key_material_folder";
     protected static final String[] MINE_KEYS = {
-            KEY_MULTICAST_ADDRESS,
+//            KEY_MULTICAST_ADDRESS,
             KEY_MULTICAST_PORT,
             KEY_PROXY_ADDRESS,
             KEY_PROXY_PORT,

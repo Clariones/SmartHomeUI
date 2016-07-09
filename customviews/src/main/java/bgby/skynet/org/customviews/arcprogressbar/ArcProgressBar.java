@@ -181,17 +181,20 @@ public class ArcProgressBar extends View implements ICentredView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         //int mhoffset = (int) (attributes.getTickMarkTextSize() * FACTOR_TEXT_TO_LENGTH / 2 - attributes.getTickMarkLineLength());
         int mhoffset = 0;
-        if (renderDrawArea != null) {
-            int measureWidth = (int) (renderDrawArea.x1 - renderDrawArea.x0);
-            int measureHeight = (int) (renderDrawArea.y1 - renderDrawArea.y0);
-            Log.d(TAG, "Measurement is " + measureWidth + "x" + measureHeight);
-            setMeasuredDimension(measureWidth, measureHeight + mhoffset);
-            return;
-        }
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
         int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
+        if (renderDrawArea != null) {
+            int measureWidth = (int) (renderDrawArea.x1 - renderDrawArea.x0);
+            int measureHeight = (int) (renderDrawArea.y1 - renderDrawArea.y0);
+            Log.d(TAG, "Old Measurement is " + measureWidth + "x" + measureHeight);
+            if (measureWidth <= sizeWidth && measureHeight <=sizeHeight) {
+                Log.d(TAG, "Use old measurment inside" + sizeWidth + "x" + sizeHeight);
+                setMeasuredDimension(measureWidth, measureHeight + mhoffset);
+                return;
+            }
+        }
         Log.i(TAG, String.format("DEBUG: onMeasure (%x)%d,(%x)%d", widthMode, sizeWidth, heightMode, sizeHeight));
         // calculate draw area template
         Utils.DrawAreaData template = Utils.calculateDrawArea(TEMPLATE_DIAMTER, attributes.getDegree());

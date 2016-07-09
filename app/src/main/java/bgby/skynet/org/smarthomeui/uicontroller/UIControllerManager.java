@@ -442,9 +442,9 @@ public class UIControllerManager {
         if (config.getDriverProxyPort() <= 0) {
             errorReport("驱动代理HTTP端口未设定");
         }
-        if (config.getMulticastAddress() == null) {
-            errorReport("管理消息监听地址未设定");
-        }
+//        if (config.getMulticastAddress() == null) {
+//            errorReport("管理消息监听地址未设定");
+//        }
         if (config.getMulticastPort() <= 0) {
             errorReport("管理消息监听端口未设定");
         }

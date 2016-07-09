@@ -24,6 +24,7 @@ public class CircleCentreRelaytiveLayout extends ViewGroup {
     private int mLeft;
     private int mRight;
     private int mBottom;
+    private boolean hasMeasured = false;
 
     public CircleCentreRelaytiveLayout(Context context) {
         this(context, null);
@@ -76,6 +77,32 @@ public class CircleCentreRelaytiveLayout extends ViewGroup {
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
         int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
 
+        int maxWidth = sizeWidth;
+        int maxHeight = sizeHeight;
+        int curMWidth = maxWidth;
+        int curMHeight = maxHeight;
+//        if (hasMeasured && (mRight-mLeft <= maxWidth) && (mBottom-mTop <= maxHeight)){
+//            this.setMeasuredDimension(mRight-mLeft, mBottom-mTop);
+//            return;
+//        }
+        hasMeasured = true;
+        for(int i=0;i<5;i++) {
+            tryMeasureOnce(widthMeasureSpec, heightMeasureSpec, children);
+            if (mRight-mLeft <= maxWidth && mBottom-mTop <= maxHeight){
+                break;
+            }
+            double factorX = 1.0 * (mRight-mLeft) / maxWidth;
+            double factorY = 1.0 * (mBottom-mTop) / maxHeight;
+            double factor = Math.min(factorX, factorY);
+            curMWidth = (int) (curMWidth * factor);
+            curMHeight = (int) (curMHeight * factor);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(curMWidth,widthMode);
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(curMHeight, heightMode);
+        }
+        this.setMeasuredDimension(mRight-mLeft, mBottom-mTop);
+    }
+
+    private void tryMeasureOnce(int widthMeasureSpec, int heightMeasureSpec, List<MeasureData> children) {
         int top = 0, left = 0, right = 0, bottom = 0;
         Iterator<MeasureData> it = children.iterator();
         while (it.hasNext()) {
@@ -109,7 +136,6 @@ public class CircleCentreRelaytiveLayout extends ViewGroup {
         this.mBottom = bottom;
 
         Log.i(TAG, String.format("My area is %d,%d->%d,%d", mTop, mLeft, mRight, mBottom));
-        this.setMeasuredDimension(right-left, bottom-top);
     }
 
     private void setMaxDiameter(MeasureData data, View childView) {
