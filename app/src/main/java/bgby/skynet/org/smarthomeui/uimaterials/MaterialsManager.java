@@ -64,6 +64,12 @@ public class MaterialsManager {
     public static final String MATERIAL_ID_TEMPERATURE = "app/default/system/temperature";
     public static final String MATERIAL_ID_HUMIDITY = "app/default/system/humidity";
     public static final String MATERIAL_ID_PM2_5 = "app/default/system/pm2.5";
+    public static final String MATERIAL_ID_SENSOR_GOOD = "app/default/system/sensor/good";
+    public static final String MATERIAL_ID_SENSOR_NORMAL = "app/default/system/sensor/normal";
+    public static final String MATERIAL_ID_SENSOR_BAD = "app/default/system/sensor/bad";
+    public static final String MATERIAL_ID_MEASURE_LEVEL_GOOD = "app/default/system/measurelevel/good";
+    public static final String MATERIAL_ID_MEASURE_LEVEL_NORMAL = "app/default/system/measurelevel/normal";
+    public static final String MATERIAL_ID_MEASURE_LEVEL_BAD = "app/default/system/measurelevel/bad";
     public static final String MATERIAL_ID_LOGO = "app/default/system/logo";
     public static final String CONFIG_PROPERTIES = "config.properties";
 

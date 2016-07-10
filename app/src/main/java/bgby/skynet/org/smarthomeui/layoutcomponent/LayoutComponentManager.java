@@ -115,5 +115,6 @@ public class LayoutComponentManager {
         registerLayoutComponentType(SixGridLayoutBase.TYPE, SixGridLayoutBase.class);
         registerLayoutComponentType(SimpleDimmerComponent.TYPE, SimpleDimmerComponent.class);
         registerLayoutComponentType(NormalFloorHeatingComponent.TYPE, NormalFloorHeatingComponent.class);
+        registerLayoutComponentType(SimpleSensorComponent.TYPE, SimpleSensorComponent.class);
     }
 }

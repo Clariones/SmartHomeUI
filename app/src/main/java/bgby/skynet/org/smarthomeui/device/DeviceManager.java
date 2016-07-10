@@ -80,5 +80,6 @@ public class DeviceManager {
         addDeviceExample(new DimmerDevice());
         addDeviceExample(new NormalHvacDevice());
         addDeviceExample(new NormalFloorHeatingDevice());
+        addDeviceExample(new SimpleSensorDevice());
     }
 }

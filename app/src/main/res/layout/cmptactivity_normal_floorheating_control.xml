@@ -196,7 +196,7 @@
                 android:layout_height="@dimen/cmptactivity_normal_floorheating_switch_image_height"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitXY" />
         </RelativeLayout>
     </LinearLayout>
 

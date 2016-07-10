@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="bgby.skynet.org.uicomponent.simplelight.SimpleLightFragment">
+    tools:context="bgby.skynet.org.uicomponent.simplesensor.SimpleSensorFragment">
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/cmpt_simplelight_background"
+        android:id="@+id/cmpt_simplesensor_background"
         android:scaleType="centerCrop" />
 
     <LinearLayout
@@ -23,7 +23,14 @@
             <ImageView
                 android:layout_width="@dimen/cmptsummary_icon_width"
                 android:layout_height="@dimen/cmptsummary_icon_height"
-                android:id="@+id/cmpt_simplelight_mode_icon" />
+                android:id="@+id/cmpt_simplesensor_mode_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/common_undefined_value"
+                android:id="@+id/cmpt_simplesensor_value_text"
+                android:layout_centerInParent="true" />
 
         </RelativeLayout>
         <TextView
@@ -32,7 +39,7 @@
             android:textSize="@dimen/cmptsummary_name_size"
             android:layout_gravity="center_horizontal"
             android:text="@string/common_undefined_device_name"
-            android:id="@+id/cmpt_simplelight_name" />
+            android:id="@+id/cmpt_simplesensor_name" />
     </LinearLayout>
 
 
